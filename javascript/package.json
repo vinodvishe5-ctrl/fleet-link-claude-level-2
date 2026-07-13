@@ -1,0 +1,14 @@
+{
+  "name": "fleetlink",
+  "version": "0.1.0",
+  "description": "FleetLink — Level 2 running project (JavaScript track)",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "NODE_ENV=test node --test"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

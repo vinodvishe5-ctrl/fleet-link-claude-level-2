@@ -1,0 +1,27 @@
+# Level 2 labs — the running project, day by day
+
+Every Level 2 day adds one layer to FleetLink on a new branch. This is the map. Only **Day 1** is a
+full lab guide today; the later entries are previews so you can see where the project is heading — each
+becomes a full guide on its day.
+
+| Day | Date | Module | Branch | You build |
+|-----|------|--------|--------|-----------|
+| **1** | Tue 14 Jul | **2.A** Approach & Architecture | `day-1/<you>` | **[Full guide →](day-1-architecture.md)** — run the skeleton, analyse the FSD, decide DB-first vs software-first, draft the entity list, set the project's `CLAUDE.md`. |
+| 2 | Wed 15 Jul | 2.B Claude Code Foundations (new & existing) | `day-2/<you>` | Scaffold FleetLink from the FSD with Claude Code; onboard onto an existing codebase; first working slice. |
+| 3 | Thu 16 Jul | 2.C Database & Domain Model | `day-3/<you>` | Confirm the schema, generate the data model database-first, seed the sample data. |
+| 4 | Fri 17 Jul | 2.D API & Business Logic | `day-4/<you>` | Layered API (controller/route → service → repository), the business rules, client + backend validation. |
+| 5 | Mon 20 Jul | 2.E UI / UX & Front-End | `day-5/<you>` | UI from the API contract + design system; wire it to the API. |
+| 6 | Tue 21 Jul | 2.F CLAUDE.md, Skills & Consistency | `day-6/<you>` | Grow `CLAUDE.md`; build a Skill / slash command / hook to enforce standards up front. |
+| 7 | Wed 22 Jul | 2.G Multi-Team + 2.H Debugging & RCA | `day-7/<you>` | Role hand-off across the chain; diagnose and fix a planted bug with RCA. |
+| 8 | Thu 23 Jul | 2.I System & Integration Testing | `day-8/<you>` | Generate and run tests across layers; triage failures. |
+| 9 | Fri 24 Jul (am) | 2.J RAG | `day-9/<you>` | A developer Q&A assistant grounded in FleetLink's own docs and code, with citations. |
+| 10 | Fri 24 Jul (pm) | 2.K MCP & Agentic Lab + 2.L Q&A | `day-10/<you>` | One small, guard-railed agent over FleetLink; consolidation and open clinic. |
+
+> Dates follow the Level 2 window (14–24 July, weekdays only). Sequencing is indicative and can be
+> re-balanced by the facilitator; the *order of layers* is what matters.
+
+## How to use a lab guide
+
+Each guide is written for you **and** for your Claude Code. It gives the goal, the exact prompts to
+start from, the checkpoints where you stop and review, and the acceptance criteria for "done". Drive
+Claude Code with it — do not paste it and walk away. You review every diff; you own every commit.

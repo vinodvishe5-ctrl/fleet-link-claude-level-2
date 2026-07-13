@@ -1,0 +1,16 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# .NET
+**/bin/
+**/obj/
+*.user
+
+# Node
+**/node_modules/
+npm-debug.log*
+.env
