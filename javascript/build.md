@@ -36,6 +36,43 @@ is all that exists on Day 1.
 
 ## 2. The target application (built across the modules)
 
+### 2.0 Scaffold & first slice (Module 2.B) — **TODAY**
+
+Module 2.B is the **Claude Code foundations** layer: onboard onto the existing skeleton (brownfield),
+then scaffold the frame the later modules fill (greenfield) and prove it with **one non-domain slice**.
+**Do not build any FleetLink entity, seed data or business rule here — that is 2.C.**
+
+**Brownfield (onboard on the existing skeleton):**
+- Add a `GET /version` route that **mirrors the existing `health.js` pattern exactly** (same style, no
+  new libraries). It returns `{ "app": "FleetLink", "version": "0.2.0" }`. Wire it in `server.js` next to
+  the health route.
+
+**Greenfield (scaffold the layered structure):** create the empty layer folders, each with a short
+`README.md` (or `.gitkeep`) naming what it holds and which module fills it — **folders only, no domain code**:
+```
+src/
+  models/    README.md   → "FSD entity shapes/factories — filled in Module 2.C"
+  data/      README.md   → "in-memory store + seed — filled in Module 2.C"
+  services/  README.md   → "business rules — filled in Module 2.D"
+  routes/    README.md   → "one Express router per resource — filled in Module 2.D"
+```
+
+**The one non-domain vertical slice — `GET /api/meta`** (proves route → service layering):
+- `src/services/metaService.js` — exports a function returning the meta object; **no business logic**.
+  `plannedEntities` is a **static list** of the FSD entity names — do **not** create those shapes.
+- `src/routes/meta.js` — an Express router mapping `GET /api/meta` → `metaService`.
+- Wire the router into `server.js`. Response body, exactly:
+  ```json
+  { "app": "FleetLink", "track": "javascript", "version": "0.2.0", "buildStage": "2.B — scaffold",
+    "plannedEntities": ["Depot","Vehicle","Driver","Part","WorkOrder","WorkOrderPart"] }
+  ```
+
+**Also (2.B):** add a short **"Project layout & build stage"** section to `javascript/CLAUDE.md` recording
+the scaffolded layout and stating "current stage: 2.B — scaffold; domain arrives in 2.C". Keep it tight.
+
+**Definition of done (2.B):** `npm start` works; `/health`, `/version` and `/api/meta` all respond;
+`/api/meta` flows through a service; `npm test` green; **zero** business rules and **zero** FSD entities exist yet.
+
 ### 2.1 Models (`src/models/`) — Module 2.C
 A shape/factory per FSD entity, names matching the FSD exactly:
 `depot`, `vehicle`, `driver`, `part`, `workOrder`, `workOrderPart`, plus the allowed enum values for
@@ -74,6 +111,7 @@ Structured logging, error-handling middleware mapping to the shared error shape,
 
 ## 3. Build order (follow the labs, not this list, day to day)
 
+0. **2.B** brownfield `/version` + scaffold empty layer folders + `/api/meta` slice → frame runs, no domain.
 1. **2.C** models + store + seed + read routes → app lists real seed data.
 2. **2.D** services with rules → write routes → validation → tests green.
 3. **2.E** UI against the API contract (jQuery / vanilla / a light framework, per the team's design

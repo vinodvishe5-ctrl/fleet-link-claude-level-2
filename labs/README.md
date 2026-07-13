@@ -7,7 +7,7 @@ becomes a full guide on its day.
 | Day | Date | Module | Branch | You build |
 |-----|------|--------|--------|-----------|
 | **1** | Tue 14 Jul | **2.A** Approach & Architecture | `day-1/<you>` | **[Full guide →](day-1-architecture.md)** — run the skeleton, analyse the FSD, decide DB-first vs software-first, draft the entity list, set the project's `CLAUDE.md`. |
-| 2 | Wed 15 Jul | 2.B Claude Code Foundations (new & existing) | `day-2/<you>` | Scaffold FleetLink from the FSD with Claude Code; onboard onto an existing codebase; first working slice. |
+| **2** | Wed 15 Jul | **2.B** Claude Code Foundations (new & existing) | `day-2/<you>` | **[Full guide →](day-2-claude-code.md)** — install & drive Claude Code; onboard onto your Day-1 skeleton (brownfield); scaffold the layered structure + a `GET /api/meta` slice (greenfield). No domain yet. |
 | 3 | Thu 16 Jul | 2.C Database & Domain Model | `day-3/<you>` | Confirm the schema, generate the data model database-first, seed the sample data. |
 | 4 | Fri 17 Jul | 2.D API & Business Logic | `day-4/<you>` | Layered API (controller/route → service → repository), the business rules, client + backend validation. |
 | 5 | Mon 20 Jul | 2.E UI / UX & Front-End | `day-5/<you>` | UI from the API contract + design system; wire it to the API. |

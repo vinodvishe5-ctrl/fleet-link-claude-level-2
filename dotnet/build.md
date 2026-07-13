@@ -36,6 +36,45 @@ that exists on Day 1.
 
 ## 2. The target application (built across the modules)
 
+### 2.0 Scaffold & first slice (Module 2.B) — **TODAY**
+
+Module 2.B is the **Claude Code foundations** layer: onboard onto the existing skeleton (brownfield),
+then scaffold the frame the later modules fill (greenfield) and prove it with **one non-domain slice**.
+**Do not build any FleetLink entity, seed data, DTO or business rule here — that is 2.C.**
+
+**Brownfield (onboard on the existing skeleton):**
+- Add a `GET /version` endpoint that **mirrors the existing `HealthEndpoints` pattern exactly** (same
+  folder, same minimal-API style, no new libraries). It returns `{ "app": "FleetLink", "version": "0.2.0" }`.
+  Wire it in `Program.cs` next to the health mapping.
+
+**Greenfield (scaffold the layered structure):** create the empty layer folders, each with a short
+`README.md` naming what it holds and which module fills it — **folders only, no domain code**:
+```
+src/FleetLink.Api/
+  Models/     README.md   → "FSD entities — filled in Module 2.C"
+  Data/       README.md   → "in-memory store + SeedData — filled in Module 2.C"
+  Dtos/       README.md   → "request/response DTOs — filled in Module 2.D"
+  Services/   README.md   → "business rules behind interfaces — filled in Module 2.D"
+  Endpoints/  (exists)    → already holds HealthEndpoints; MetaEndpoints added below
+```
+
+**The one non-domain vertical slice — `GET /api/meta`** (proves route → service layering):
+- `Dtos/MetaDto.cs` — `App`, `Track`, `Version`, `BuildStage`, `PlannedEntities` (string[]).
+- `Services/IMetaService.cs` + `Services/MetaService.cs` — returns a `MetaDto`; **no business logic**.
+  `PlannedEntities` is a **static list** of the FSD entity names — do **not** create those types.
+- `Endpoints/MetaEndpoints.cs` — maps `GET /api/meta` → `IMetaService.GetMeta()`.
+- Register `IMetaService` in `Program.cs` via DI and map the endpoint. Response body, exactly:
+  ```json
+  { "app": "FleetLink", "track": "dotnet", "version": "0.2.0", "buildStage": "2.B — scaffold",
+    "plannedEntities": ["Depot","Vehicle","Driver","Part","WorkOrder","WorkOrderPart"] }
+  ```
+
+**Also (2.B):** add a short **"Project layout & build stage"** section to `dotnet/CLAUDE.md` recording the
+scaffolded layout and stating "current stage: 2.B — scaffold; domain arrives in 2.C". Keep it tight.
+
+**Definition of done (2.B):** `dotnet run` works; `/health`, `/version` and `/api/meta` all respond;
+`/api/meta` flows through a service; **zero** business rules and **zero** FSD entities exist yet.
+
 ### 2.1 Models (`src/FleetLink.Api/Models/`) — Module 2.C
 One class per FSD entity, names matching the FSD exactly:
 `Depot`, `Vehicle`, `Driver`, `Part`, `WorkOrder`, `WorkOrderPart`, and the enums
@@ -81,6 +120,7 @@ Structured logging, a global exception handler mapping to the problem shape, and
 
 ## 3. Build order (follow the labs, not this list, day to day)
 
+0. **2.B** brownfield `/version` + scaffold empty layer folders + `/api/meta` slice → frame runs, no domain.
 1. **2.C** Models + `FleetStore` + `SeedData` + read endpoints → app lists real seed data.
 2. **2.D** DTOs → services with rules → write endpoints → validation → tests green.
 3. **2.E** UI against the API contract (separate front-end; see the JavaScript track or a Razor/Blazor
