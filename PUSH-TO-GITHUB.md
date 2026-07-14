@@ -1,7 +1,19 @@
 # Push FleetLink to GitHub (facilitator, one-time)
 
-This repo is already initialised locally with a `main` branch (the seed) committed. Do this once to put
+This repo is already initialised locally with the seed committed (branch `master`). Do this once to put
 it on GitHub and share the link with trainees.
+
+## 0. Clear stale lock files (one command)
+
+The repo was initialised in a sandbox whose filesystem left two empty git lock files behind. Clear them
+once from inside `fleetlink/` before running any git command:
+
+```bash
+rm -f .git/HEAD.lock .git/index.lock .git/objects/maintenance.lock
+git status        # should now work cleanly and show "nothing to commit, working tree clean"
+```
+
+If `git status` still complains about a lock, run: `find .git -name '*.lock' -delete`.
 
 ## 1. Create an empty repo on GitHub
 
