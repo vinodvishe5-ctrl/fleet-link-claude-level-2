@@ -4,6 +4,11 @@ Every Level 2 day adds one layer to FleetLink on a new branch. This is the map. 
 full lab guide today; the later entries are previews so you can see where the project is heading — each
 becomes a full guide on its day.
 
+> **First-time setup (once):** you work on **your own fork**. Fork this repo on github.com, then
+> `git clone https://github.com/<you>/fleet-link-claude-level-2.git fleetlink && cd fleetlink` and
+> `git remote add upstream https://github.com/rutwikshete-novelvista/fleet-link-claude-level-2.git`.
+> You push to your fork (`origin`) and open PRs against the shared repo — see [`../BRANCHING.md`](../BRANCHING.md).
+
 | Day | Date | Module | Branch | You build |
 |-----|------|--------|--------|-----------|
 | **1** | Tue 14 Jul | **2.A** Approach & Architecture | `day-1/<you>` | **[Full guide →](day-1-architecture.md)** — run the skeleton, analyse the FSD, decide DB-first vs software-first, draft the entity list, set the project's `CLAUDE.md`. |

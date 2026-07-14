@@ -10,11 +10,13 @@
 
 ## 0. Setup — branch, launch, prove sign-in (15 min)
 
-1. **Continue from yesterday.** Branch today's work from your Day-1 branch, so the project stays cumulative:
+1. **Continue from yesterday.** You already have your fork cloned as `fleetlink` from Day 1 (`origin` =
+   your fork). Branch today's work from your Day-1 branch, so the project stays cumulative:
    ```bash
    git checkout day-1/<your-name>
    git checkout -b day-2/<your-name>
    ```
+   *(On a fresh machine? Clone your fork first: `git clone https://github.com/<your-name>/fleet-link-claude-level-2.git fleetlink && cd fleetlink && git remote add upstream https://github.com/rutwikshete-novelvista/fleet-link-claude-level-2.git`)*
 2. **Confirm Claude Code is installed** (it is pre-installed on your VM). If you are setting it up on a real machine later, see [Windows install](#appendix--windows-install--login-hand-out).
    ```bash
    claude --version
@@ -121,9 +123,10 @@ One thin, **non-domain** vertical slice through the layers you just scaffolded �
 - [ ] You reviewed **every** diff before committing; commits say *what changed and why*.
 - [ ] Your `day-2/<you>` branch is pushed.
 
-**Push and (optionally) open a PR** so a facilitator can review your scaffold:
+**Push to your fork and (optionally) open a PR** — from your fork's branch against the shared repo's
+`main` — so a facilitator can review your scaffold:
 ```bash
-git push -u origin day-2/<your-name>
+git push -u origin day-2/<your-name>      # origin = your fork
 ```
 
 ## Tomorrow (Day 3 · Module 2.C)

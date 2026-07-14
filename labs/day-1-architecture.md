@@ -14,10 +14,17 @@ vs software-first), a **confirmed candidate entity list**, a **build-sequence pl
 
 ## 0. Setup (10 min)
 
-1. **Clone** the repo onto your VM and open it in your IDE (Visual Studio / VS Code / Rider).
+1. **Fork** the repo on github.com (the **Fork** button), then **clone your fork** into a folder named
+   `fleetlink` and open it in your IDE (Visual Studio / VS Code / Rider). You push to your fork; you
+   never push to the shared repo — see [`../BRANCHING.md`](../BRANCHING.md).
+   ```bash
+   git clone https://github.com/<your-name>/fleet-link-claude-level-2.git fleetlink
+   cd fleetlink
+   git remote add upstream https://github.com/rutwikshete-novelvista/fleet-link-claude-level-2.git
+   ```
 2. **Create your branch:**
    ```bash
-   git checkout main && git pull
+   git checkout main && git pull upstream main
    git checkout -b day-1/<your-name>
    ```
 3. **Run the skeleton** for your track and confirm the health check responds:
@@ -129,9 +136,10 @@ naming rule, a layering rule, an error-format rule). Keep it tight; you grow it 
 - [ ] You caught at least one thing Claude inferred that the FSD did not state.
 - [ ] Your Day-1 branch is committed and pushed.
 
-**Push and (optionally) open a PR** so a facilitator can review your architecture decision:
+**Push to your fork and (optionally) open a PR** — from your fork's branch against the shared repo's
+`main` — so a facilitator can review your architecture decision:
 ```bash
-git push -u origin day-1/<your-name>
+git push -u origin day-1/<your-name>      # origin = your fork
 ```
 
 ## Tomorrow (Day 2 · Module 2.B)
