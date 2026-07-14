@@ -1,6 +1,6 @@
 # Day 2 Lab — Module 2.B: Claude Code Foundations (New & Existing)
 
-**Time:** ~100 minutes hands-on · **Branch:** `day-2/<you>` (from your Day-1 branch) · **Track:** stay in the one you picked — `dotnet/` **or** `javascript/`
+**Time:** ~100 minutes hands-on · **Branch:** `day-2/<you>` (from `upstream/main`, the shared ideal reference) · **Track:** stay in the one you picked — `dotnet/` **or** `javascript/`
 
 **What you leave with:** Claude Code installed, signed in and driven end to end; a **brownfield** change made on your own Day-1 skeleton in its existing style; a **greenfield** scaffold of FleetLink's layered structure with a sharper `CLAUDE.md`; and one thin, non-domain **`GET /api/meta`** slice that proves the frame runs — all reviewed, committed and pushed.
 
@@ -10,13 +10,17 @@
 
 ## 0. Setup — branch, launch, prove sign-in (15 min)
 
-1. **Continue from yesterday.** You already have your fork cloned as `fleetlink` from Day 1 (`origin` =
-   your fork). Branch today's work from your Day-1 branch, so the project stays cumulative:
+1. **Start from the shared ideal reference — not your own Day-1 branch.** Every day begins from the same
+   correct baseline on `upstream/main` (the facilitator's ideal build so far), so a missed step never
+   cascades. Fetch it and branch today's work from it:
    ```bash
-   git checkout day-1/<your-name>
-   git checkout -b day-2/<your-name>
+   git fetch upstream
+   git checkout -b day-2/<your-name> upstream/main
    ```
    *(On a fresh machine? Clone your fork first: `git clone https://github.com/<your-name>/fleet-link-claude-level-2.git fleetlink && cd fleetlink && git remote add upstream https://github.com/rutwikshete-novelvista/fleet-link-claude-level-2.git`)*
+
+   > You're starting from the **ideal completion of Day 1**, whatever happened in your own Day-1 session.
+   > Take a moment to look at the baseline you're building on — then add today's layer on top.
 2. **Confirm Claude Code is installed** (it is pre-installed on your VM). If you are setting it up on a real machine later, see [Windows install](#appendix--windows-install--login-hand-out).
    ```bash
    claude --version
@@ -131,7 +135,7 @@ git push -u origin day-2/<your-name>      # origin = your fork
 
 ## Tomorrow (Day 3 · Module 2.C)
 
-You branch `day-3/<you>` from today's work and design FleetLink's **data model** — entities, relationships and constraints — deliberately, **database-first**, straight from the FSD. Today's scaffold is exactly the frame that domain code slots into.
+You branch `day-3/<you>` from `upstream/main` — which by then holds today's **ideal** scaffold — and design FleetLink's **data model** — entities, relationships and constraints — deliberately, **database-first**, straight from the FSD. The scaffold is exactly the frame that domain code slots into, and you start Day 3 from the ideal version of it, not your own.
 
 ---
 

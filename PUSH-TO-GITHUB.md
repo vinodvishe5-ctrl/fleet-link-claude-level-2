@@ -51,9 +51,31 @@ Send them the repo URL and these lines:
 > cd fleetlink
 > git remote add upstream https://github.com/rutwikshete-novelvista/fleet-link-claude-level-2.git
 > ```
-> 3. Follow `labs/day-1-architecture.md`. You push to **your fork** (`origin`) and open PRs against this repo.
+> 3. Follow `labs/day-1-architecture.md`. **Each day, start fresh from the shared ideal reference:**
+> `git fetch upstream && git checkout -b day-N/<you> upstream/main`. Push your day's branch to **your fork**
+> (`origin`) and open PRs against this repo for review.
 
 That's it — the seed on `main` is everything they need to start Day 1, and they push to their own fork.
+
+**Trainees re-baseline every day — they do NOT carry their own work forward.** `main` always holds the
+ideal build so far; everyone branches the new day off `upstream/main`. That way a missed step never
+cascades into the next day. The mechanism and the daily routine are in [`BRANCHING.md`](BRANCHING.md).
+
+## 4b. Reference branches & advancing `main` (the bit that makes re-baseline work)
+
+Each day's **ideal, completed** build is staged on a `solution/day-N` branch (Novel Vista supplies these
+— e.g. `solution/day-2` = the ideal Module-2.B scaffold). **At the end of day N**, after the class has
+done that day, promote it so the next morning everyone starts from the ideal:
+
+```bash
+git fetch origin
+git checkout main
+git merge --ff-only origin/solution/day-2      # the day you just finished
+git push origin main
+```
+
+Do **not** promote a day's solution *before* the class runs that day, or they'll pull `main` and find the
+work already done. Keep `main` = "the ideal starting point for the day we are about to run."
 
 ## 5. Your own pushes as facilitator
 

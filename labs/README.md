@@ -7,7 +7,11 @@ becomes a full guide on its day.
 > **First-time setup (once):** you work on **your own fork**. Fork this repo on github.com, then
 > `git clone https://github.com/<you>/fleet-link-claude-level-2.git fleetlink && cd fleetlink` and
 > `git remote add upstream https://github.com/rutwikshete-novelvista/fleet-link-claude-level-2.git`.
-> You push to your fork (`origin`) and open PRs against the shared repo — see [`../BRANCHING.md`](../BRANCHING.md).
+>
+> **Every day** you start from the **shared ideal reference** on `upstream/main` — not from your own
+> previous day — so a missed step never cascades: `git fetch upstream && git checkout -b day-N/<you> upstream/main`.
+> You push your day's branch to your fork (`origin`) and open PRs against the shared repo for review.
+> See [`../BRANCHING.md`](../BRANCHING.md).
 
 | Day | Date | Module | Branch | You build |
 |-----|------|--------|--------|-----------|

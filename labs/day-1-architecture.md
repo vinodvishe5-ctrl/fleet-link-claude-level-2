@@ -144,5 +144,5 @@ git push -u origin day-1/<your-name>      # origin = your fork
 
 ## Tomorrow (Day 2 · Module 2.B)
 
-You branch `day-2/<you>` from today's work and use Claude Code to **scaffold FleetLink from the FSD** —
+You branch `day-2/<you>` from the shared ideal reference (`upstream/main`) and use Claude Code to **scaffold FleetLink from the FSD** —
 turning today's decisions into the first real slice of the running project.
