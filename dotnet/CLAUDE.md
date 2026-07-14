@@ -35,6 +35,24 @@ src/FleetLink.Api/
 - `PascalCase` for public members, `camelCase` for locals, DTO suffix `...Dto`, request suffix
   `...Request`.
 
+## Project layout & build stage
+
+**Current stage: Module 2.B — scaffold. Domain arrives in Module 2.C — do not create entities yet.**
+
+```
+src/FleetLink.Api/
+  Endpoints/  HealthEndpoints (seed), MetaEndpoints (2.B)
+  Services/   IMetaService/MetaService (2.B, non-domain) — domain services in 2.D
+  Dtos/       MetaDto (2.B) — domain DTOs in 2.D
+  Models/     (empty — FSD entities in 2.C)
+  Data/       (empty — FleetStore + SeedData in 2.C)
+  Program.cs  wires DI + maps the endpoint groups
+```
+
+Endpoints so far (all non-domain): `GET /health` (seed), `GET /api/meta`. The `/api/meta` slice is the
+reference pattern for layering: endpoint → service → DTO, no rules in the endpoint. Follow it when the
+domain arrives.
+
 ## Guardrails
 
 Sandbox only · in-memory/sample data only · **no real client data, PII, secrets or connection

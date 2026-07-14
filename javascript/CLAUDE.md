@@ -33,6 +33,24 @@ src/
 - `camelCase` for variables and functions; keep entity property names identical to the FSD.
 - Prefer async/await; centralise error handling with an Express error middleware.
 
+## Project layout & build stage
+
+**Current stage: Module 2.B — scaffold. Domain arrives in Module 2.C — do not create entities yet.**
+
+```
+src/
+  server.js   wires routers + middleware
+  health.js   registerHealthRoutes  (seed)
+  routes/     meta.js (2.B, non-domain) — domain routers in 2.D
+  services/   metaService.js (2.B, non-domain) — domain services in 2.D
+  models/     (empty — FSD entity shapes in 2.C)
+  data/       (empty — store + seed in 2.C)
+```
+
+Endpoints so far (all non-domain): `GET /health` (seed), `GET /api/meta`. The `/api/meta` slice is the
+reference pattern for layering: router → service, no rules in the route. Follow it when the domain
+arrives.
+
 ## Guardrails
 
 Sandbox only · in-memory/sample data only · **no real client data, PII, secrets or connection
