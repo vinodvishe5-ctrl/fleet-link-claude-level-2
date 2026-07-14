@@ -36,18 +36,18 @@ that exists on Day 1.
 
 ## 2. The target application (built across the modules)
 
-### 2.0 Scaffold & first slice (Module 2.B) — **TODAY**
+### 2.0 Plan + scaffold + first slice (Module 2.B — Spec-Driven Development) — **TODAY**
 
-Module 2.B is the **Claude Code foundations** layer: onboard onto the existing skeleton (brownfield),
-then scaffold the frame the later modules fill (greenfield) and prove it with **one non-domain slice**.
+Module 2.B is **spec-driven development**: turn the FSD into a confirmed build plan, then execute its
+first step — scaffold the frame the later slices fill and prove it with **one non-domain slice** — and
+capture the slice procedure as a **skill**. Everything traces to the FSD.
 **Do not build any FleetLink entity, seed data, DTO or business rule here — that is 2.C.**
 
-**Brownfield (onboard on the existing skeleton):**
-- Add a `GET /version` endpoint that **mirrors the existing `HealthEndpoints` pattern exactly** (same
-  folder, same minimal-API style, no new libraries). It returns `{ "app": "FleetLink", "version": "0.2.0" }`.
-  Wire it in `Program.cs` next to the health mapping.
+**Plan (human-owned, no code):** the trainee has Claude draft a build plan from `../docs/FSD-FleetLink.md`
+and `../docs/build-sequence.md` (the vertical slices, in order, with checkpoints) and **confirms it**,
+saving it as `day2/plan.md`. Claude Code does not generate this — it is the human deliverable of Part A.
 
-**Greenfield (scaffold the layered structure):** create the empty layer folders, each with a short
+**Scaffold the layered structure:** create the empty layer folders, each with a short
 `README.md` naming what it holds and which module fills it — **folders only, no domain code**:
 ```
 src/FleetLink.Api/
@@ -72,7 +72,16 @@ src/FleetLink.Api/
 **Also (2.B):** add a short **"Project layout & build stage"** section to `dotnet/CLAUDE.md` recording the
 scaffolded layout and stating "current stage: 2.B — scaffold; domain arrives in 2.C". Keep it tight.
 
-**Definition of done (2.B):** `dotnet run` works; `/health`, `/version` and `/api/meta` all respond;
+**Skill (2.B, both tracks — repo root):** create a Claude Code project skill at
+`.claude/skills/add-slice/SKILL.md` that captures the `/api/meta` layered pattern — given a route path,
+name and fixed non-domain response it adds a slice (service with no logic + thin endpoint), detects the
+track, follows both `CLAUDE.md` files and the `/api/meta` reference, and **stops at the diff**. It must
+refuse FSD entities / business rules (2.C/2.D). This is a first taste; 2.F builds the full skills/hooks
+toolkit. (Skill lives at the repo root so it applies to both tracks.)
+
+**Definition of done (2.B):** `day2/plan.md` exists (human-confirmed, traces to the FSD); `dotnet run`
+works; `/health` and `/api/meta` respond; the `add-slice` skill exists and produces a slice in the same
+layered shape;
 `/api/meta` flows through a service; **zero** business rules and **zero** FSD entities exist yet.
 
 ### 2.1 Models (`src/FleetLink.Api/Models/`) — Module 2.C
@@ -120,7 +129,7 @@ Structured logging, a global exception handler mapping to the problem shape, and
 
 ## 3. Build order (follow the labs, not this list, day to day)
 
-0. **2.B** brownfield `/version` + scaffold empty layer folders + `/api/meta` slice → frame runs, no domain.
+0. **2.B** confirm a spec-to-build plan + scaffold empty layer folders + `/api/meta` slice + `add-slice` skill → frame runs, no domain.
 1. **2.C** Models + `FleetStore` + `SeedData` + read endpoints → app lists real seed data.
 2. **2.D** DTOs → services with rules → write endpoints → validation → tests green.
 3. **2.E** UI against the API contract (separate front-end; see the JavaScript track or a Razor/Blazor
