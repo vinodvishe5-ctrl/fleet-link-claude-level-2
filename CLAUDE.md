@@ -39,6 +39,17 @@ ambiguous, ask rather than assume.
 - Names match the FSD exactly (`WorkOrder`, `Depot`, `OdometerKm`, …) so both tracks and all people
   stay aligned.
 
+## Conventions confirmed on Day 1 (2.A)
+
+Three concrete rules we agreed while deciding the approach. Kept tight on purpose — `CLAUDE.md` grows
+properly in Module 2.F.
+
+- **One error shape, everywhere:** errors return `{ "error": "<message>", "code": "<SHORT_CODE>" }` with
+  the FSD's status code (`400`/`404`/`409`). Centralise it — never hand-roll an error body per endpoint.
+- **Enums are stored and exposed as strings** (`"Active"`, `"Breakdown"`, …), never as magic integers,
+  so data and API payloads stay readable and stable.
+- **Ids are server-generated** (Guid/uuid). Clients never supply an `Id` on create; the API assigns it.
+
 ## Track-specific standards
 
 - .NET: see [`dotnet/CLAUDE.md`](dotnet/CLAUDE.md)
