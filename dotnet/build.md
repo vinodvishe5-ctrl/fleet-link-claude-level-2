@@ -84,6 +84,48 @@ works; `/health` and `/api/meta` respond; the `add-slice` skill exists and produ
 layered shape;
 `/api/meta` flows through a service; **zero** business rules and **zero** FSD entities exist yet.
 
+### 2.C Data model & seed (Module 2.C — Building with Claude Code: where everything lives) — **TODAY**
+
+Module 2.C fills the **first real layer** into the frame 2.B scaffolded. The teaching lens is
+**Claude Code and file structure**, not data-modelling theory: the skill today is deciding **which
+file holds what** and placing each piece in its **one right home**, so both the team and Claude find
+things where they expect. You build the *shapes* and the *state* only — **no rules, no DTOs, no
+endpoints** (those are 2.D and their folders stay empty on purpose).
+
+**Placement map — the five kinds of thing, and where each goes:**
+```
+docs/                       human-owned truth  → design record + schema go here TODAY
+src/FleetLink.Api/
+  Models/     SHAPES         → entities + enums          (fill TODAY — no logic, no data)
+  Data/       STATE          → FleetStore + SeedData      (fill TODAY — the actual data)
+  Dtos/       CONTRACT       → (stays empty — Module 2.D)
+  Services/   RULES          → (stays empty — Module 2.D)
+  Endpoints/  WIRING         → (exists: Health, Meta — domain endpoints in 2.D)
+```
+
+**Confirm first (human-owned):** the trainee has Claude read `../docs/FSD-FleetLink.md` §3–§4, propose
+the entities/attributes/relationships, and **confirms** the draft — accepting what the spec states,
+cutting what Claude inferred (a driver→vehicle link, a stock-per-depot table, stored `TotalCost`/
+`PartsCost` columns, an over-normalised `City` table, a `User`/`Role` model — all out per FSD §9).
+The confirmed design is written to **`../docs/data-model.md`** (what was agreed **and** what was
+rejected and why) and the agreed schema to **`../docs/schema.sql`**. These are **design records → they
+live in `docs/`**, the human-owned truth Claude reads but never rewrites.
+
+Then place the code (see the detail in 2.1–2.2 below):
+- **`Models/`** — the six entities + five enums, FSD names exactly. **Shapes only** — no rules, no
+  derived columns (`PartsCost`/`TotalCost` are computed in the service layer in 2.D, **not stored**).
+- **`Data/`** — `FleetStore` (the in-memory holder) + `SeedData` (FSD §7 sample, **fixed Guids** shared
+  with the JS track). **State only.**
+- Update `/api/meta` so `buildStage` reads `"2.C — data model"` and it reports the **seed counts**
+  (2 depots, 4 vehicles, 3 drivers, 4 parts, 3 work orders) as proof the layer loaded.
+- Add a **"Data model (2.C)"** note to `dotnet/CLAUDE.md` recording that `Models/` and `Data/` are now
+  filled and the current stage is `2.C — data model; API is 2.D`.
+
+**Definition of done (2.C):** `docs/data-model.md` + `docs/schema.sql` exist and match the FSD;
+`Models/` holds the six entities + five enums (no logic); `Data/` holds `FleetStore` + `SeedData`
+(fixed Guids); `dotnet run` works, `/health` green, `/api/meta` reports the real seed counts;
+`Services/`, `Dtos/` remain **empty**; every diff reviewed for **correct placement** before commit.
+
 ### 2.1 Models (`src/FleetLink.Api/Models/`) — Module 2.C
 One class per FSD entity, names matching the FSD exactly:
 `Depot`, `Vehicle`, `Driver`, `Part`, `WorkOrder`, `WorkOrderPart`, and the enums

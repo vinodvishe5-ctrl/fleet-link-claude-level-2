@@ -17,7 +17,7 @@ becomes a full guide on its day.
 |-----|------|--------|--------|-----------|
 | **1** | Tue 14 Jul | **2.A** Approach & Architecture | `day-1/<you>` | **[Full guide →](day-1-architecture.md)** — run the skeleton, analyse the FSD, decide DB-first vs software-first, draft the entity list, set the project's `CLAUDE.md`. |
 | **2** | Wed 15 Jul | **2.B** Claude Code Foundations (new & existing) | `day-2/<you>` | **[Full guide →](day-2-claude-code.md)** — install & drive Claude Code; onboard onto your Day-1 skeleton (brownfield); scaffold the layered structure + a `GET /api/meta` slice (greenfield). No domain yet. |
-| 3 | Thu 16 Jul | 2.C Database & Domain Model | `day-3/<you>` | Confirm the schema, generate the data model database-first, seed the sample data. |
+| **3** | Thu 16 Jul | **2.C** Building with Claude Code: where everything lives (Data model) | `day-3/<you>` | **[Full guide →](day-3-data-model.md)** — the Claude-Code lens: how teams change, why repo structure is Claude's interface, and *which file holds what*. Place the data-model layer — shapes in `models/`, state in `data/`, design record in `docs/`. No rules yet. |
 | 4 | Fri 17 Jul | 2.D API & Business Logic | `day-4/<you>` | Layered API (controller/route → service → repository), the business rules, client + backend validation. |
 | 5 | Mon 20 Jul | 2.E UI / UX & Front-End | `day-5/<you>` | UI from the API contract + design system; wire it to the API. |
 | 6 | Tue 21 Jul | 2.F CLAUDE.md, Skills & Consistency | `day-6/<you>` | Grow `CLAUDE.md`; build a Skill / slash command / hook to enforce standards up front. |

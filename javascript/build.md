@@ -82,6 +82,49 @@ works; `/health` and `/api/meta` respond;
 the `add-slice` skill exists and produces a slice in the same layered shape;
 `/api/meta` flows through a service; `npm test` green; **zero** business rules and **zero** FSD entities exist yet.
 
+### 2.C Data model & seed (Module 2.C — Building with Claude Code: where everything lives) — **TODAY**
+
+Module 2.C fills the **first real layer** into the frame 2.B scaffolded. The teaching lens is
+**Claude Code and file structure**, not data-modelling theory: the skill today is deciding **which
+file holds what** and placing each piece in its **one right home**, so both the team and Claude find
+things where they expect. You build the *shapes* and the *state* only — **no rules, no routes** (those
+are 2.D and their folders stay empty on purpose).
+
+**Placement map — the five kinds of thing, and where each goes:**
+```
+docs/                  human-owned truth  → design record + schema go here TODAY
+src/
+  models/    SHAPES     → entity shapes/factories + enum values  (fill TODAY — no logic, no data)
+  data/      STATE      → store.js + seed.js                     (fill TODAY — the actual data)
+  services/  RULES      → (stays empty — Module 2.D)
+  routes/    WIRING     → (exists: health, meta — domain routes in 2.D)
+```
+
+**Confirm first (human-owned):** the trainee has Claude read `../docs/FSD-FleetLink.md` §3–§4, propose
+the entities/attributes/relationships, and **confirms** the draft — accepting what the spec states,
+cutting what Claude inferred (a driver→vehicle link, a stock-per-depot table, stored `totalCost`/
+`partsCost` fields, an over-normalised `city` table, a `user`/`role` model — all out per FSD §9). The
+confirmed design is written to **`../docs/data-model.md`** (what was agreed **and** what was rejected
+and why) and the agreed schema to **`../docs/schema.sql`**. These are **design records → they live in
+`docs/`**, the human-owned truth Claude reads but never rewrites.
+
+Then place the code (see the detail in 2.1–2.2 below):
+- **`src/models/`** — a shape/factory per FSD entity + the enum value sets, FSD names exactly.
+  **Shapes only** — no rules, no derived fields (`partsCost`/`totalCost` are computed in the service
+  layer in 2.D, **not stored**).
+- **`src/data/`** — `store.js` (the in-memory holder) + `seed.js` (FSD §7 sample, **fixed uuids**
+  shared with the .NET track). **State only.**
+- Update `/api/meta` so `buildStage` reads `"2.C — data model"` and it reports the **seed counts**
+  (2 depots, 4 vehicles, 3 drivers, 4 parts, 3 work orders) as proof the layer loaded.
+- Add a **"Data model (2.C)"** note to `javascript/CLAUDE.md` recording that `models/` and `data/` are
+  now filled and the current stage is `2.C — data model; API is 2.D`.
+
+**Definition of done (2.C):** `docs/data-model.md` + `docs/schema.sql` exist and match the FSD;
+`src/models/` holds the six entity shapes + enum sets (no logic); `src/data/` holds `store.js` +
+`seed.js` (fixed uuids); `npm start` works, `/health` green, `/api/meta` reports the real seed counts,
+`npm test` green; `src/services/` remains **empty**; every diff reviewed for **correct placement**
+before commit.
+
 ### 2.1 Models (`src/models/`) — Module 2.C
 A shape/factory per FSD entity, names matching the FSD exactly:
 `depot`, `vehicle`, `driver`, `part`, `workOrder`, `workOrderPart`, plus the allowed enum values for
