@@ -11,9 +11,11 @@ test('GET /api/meta returns scaffold metadata through the service', async () => 
     const body = await res.json();
     assert.equal(body.app, 'FleetLink');
     assert.equal(body.track, 'javascript');
-    assert.equal(body.version, '0.2.0');
-    assert.equal(body.buildStage, '2.B — scaffold');
+    assert.equal(body.version, '0.3.0');
+    assert.equal(body.buildStage, '2.C — data model');
     assert.equal(body.plannedEntities.length, 6);
+    // Module 2.C proof: the meta payload reports the loaded seed counts (FSD §7).
+    assert.deepEqual(body.seed, { depots: 2, vehicles: 4, drivers: 3, parts: 4, workOrders: 3 });
   } finally {
     server.close();
   }

@@ -7,7 +7,8 @@ standards so every session generates code the same way.
 
 - Node.js 18+, Express, ES modules (`"type": "module"`).
 - **In-memory store** for the training build (a module-level store seeded from `src/data/seed.js`).
-  A real database is introduced deliberately in Module 2.C — do not add one before then.
+  The agreed relational schema is recorded in Module 2.C (`../docs/schema.sql`); persistence to a real
+  database (SQL Server / Azure SQL) is built with the API in Module 2.D.
 - Tests: the built-in `node --test` runner (no extra framework needed).
 
 ## Structure & layering
@@ -35,21 +36,22 @@ src/
 
 ## Project layout & build stage
 
-**Current stage: Module 2.B — scaffold. Domain arrives in Module 2.C — do not create entities yet.**
+**Current stage: Module 2.C — data model. `models/` (shapes) and `data/` (state) are now filled;
+`services/` and domain `routes/` stay empty until Module 2.D. Build stage: `2.C — data model; API is 2.D`.**
 
 ```
 src/
-  server.js   wires routers + middleware
+  server.js   wires routers + middleware; seeds the store at startup
   health.js   registerHealthRoutes  (seed)
-  routes/     meta.js (2.B, non-domain) — domain routers in 2.D
-  services/   metaService.js (2.B, non-domain) — domain services in 2.D
-  models/     (empty — FSD entity shapes in 2.C)
-  data/       (empty — store + seed in 2.C)
+  routes/     meta.js (non-domain; now reports the seed counts) — domain routers in 2.D
+  services/   metaService.js (non-domain) — domain services in 2.D
+  models/     FSD entity factories + enums (2.C) — shapes only, no logic
+  data/       store.js + seed.js, in-memory, fixed uuids (2.C)
 ```
 
-Endpoints so far (all non-domain): `GET /health` (seed), `GET /api/meta`. The `/api/meta` slice is the
-reference pattern for layering: router → service, no rules in the route. Follow it when the domain
-arrives.
+Endpoints so far (all non-domain): `GET /health` (seed), `GET /api/meta` (now reports the seed counts).
+The `/api/meta` slice is the reference pattern for layering: router → service, no rules in the route.
+Follow it when the domain API is generated in 2.D.
 
 ## Guardrails
 

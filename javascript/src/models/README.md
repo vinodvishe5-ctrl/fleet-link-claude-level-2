@@ -1,6 +1,6 @@
-# src/models/
+# models — FleetLink domain shapes (Module 2.C)
 
-FleetLink entity shapes / factory functions — `depot`, `vehicle`, `driver`, `part`, `workOrder`,
-`workOrderPart` — matching the FSD (`docs/FSD-FleetLink.md` §3) exactly.
-
-**Empty as of Module 2.B (scaffold).** Created in **Module 2.C**. This README holds the folder in git.
+A factory per FSD §3 entity, names matching the FSD exactly: `depot`, `vehicle`, `driver`, `part`,
+`workOrder`, `workOrderPart`, plus the allowed enum values in `enums.js`. Shape only — the business
+rules that use them live in the service layer (Module 2.D). `partsCost`/`totalCost` are derived
+(FSD §3.5), not stored.

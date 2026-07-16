@@ -7,8 +7,8 @@ standards so every session generates code the same way.
 
 - .NET 8, ASP.NET Core Web API. C# with nullable + implicit usings enabled.
 - **In-memory store** for the training build (a singleton repository seeded from `Data/SeedData`).
-  A real EF Core + SQL Server model is introduced deliberately in Module 2.C — do not add a database
-  before then.
+  The agreed relational schema is recorded in Module 2.C (`../docs/schema.sql`); a real EF Core +
+  SQL Server / Azure SQL model is built with the API in Module 2.D.
 - Tests: xUnit in a sibling `FleetLink.Tests` project.
 
 ## Structure & layering
@@ -37,21 +37,22 @@ src/FleetLink.Api/
 
 ## Project layout & build stage
 
-**Current stage: Module 2.B — scaffold. Domain arrives in Module 2.C — do not create entities yet.**
+**Current stage: Module 2.C — data model. `Models/` (shapes) and `Data/` (state) are now filled;
+`Services/` and `Dtos/` stay empty until Module 2.D. Build stage: `2.C — data model; API is 2.D`.**
 
 ```
 src/FleetLink.Api/
-  Endpoints/  HealthEndpoints (seed), MetaEndpoints (2.B)
-  Services/   IMetaService/MetaService (2.B, non-domain) — domain services in 2.D
-  Dtos/       MetaDto (2.B) — domain DTOs in 2.D
-  Models/     (empty — FSD entities in 2.C)
-  Data/       (empty — FleetStore + SeedData in 2.C)
-  Program.cs  wires DI + maps the endpoint groups
+  Models/     FSD entities + Enums (2.C) — shapes only, no logic, no derived fields
+  Data/       FleetStore + SeedData, in-memory, fixed Guids (2.C)
+  Endpoints/  HealthEndpoints (seed), MetaEndpoints (2.B; now reports the seed counts)
+  Services/   IMetaService/MetaService (non-domain) — domain services in 2.D
+  Dtos/       MetaDto (+ SeedCountsDto) — domain DTOs in 2.D
+  Program.cs  wires DI + maps the endpoint groups; logs the loaded seed counts
 ```
 
-Endpoints so far (all non-domain): `GET /health` (seed), `GET /api/meta`. The `/api/meta` slice is the
-reference pattern for layering: endpoint → service → DTO, no rules in the endpoint. Follow it when the
-domain arrives.
+Endpoints so far (all non-domain): `GET /health` (seed), `GET /api/meta` (now reports the seed counts).
+The `/api/meta` slice is the reference pattern for layering: endpoint → service → DTO, no rules in the
+endpoint. Follow it when the domain API is generated in 2.D.
 
 ## Guardrails
 
