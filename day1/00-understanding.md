@@ -1,0 +1,1 @@
+the relationship between entities and miro board diagram to have visual understanding
