@@ -184,10 +184,16 @@ the same-origin API. **jQuery** is the team's front-end stack. Build these files
 - Wire `express.static('public')` into `src/server.js` (static matched first; `/api/*` falls through) and
   set `/api/meta` `buildStage` to `"2.E — UI"`.
 
+**Verify visually (the 2.E technique):** don't trust "it rendered". For each screen, run the **screenshot
+loop** — Claude captures the running page with the pre-installed Playwright (`node tmp/shot.mjs <url> <png>`),
+opens the PNG, critiques it against the design tokens (alignment, spacing, overflow, off-brand), fixes, and
+re-screenshots until it matches. Do the awkward **states** too: empty list, the 404/409/validation error,
+a narrow width (375px), a very long value.
+
 **Definition of done (2.E):** `npm start` serves the UI at `/`; the list, detail, create and status/parts
 flows all work against the real API; a rule violation (e.g. odometer decrease, over-stock, illegal
 transition) shows the friendly message from the one error shape; branding comes only from the tokens;
-`npm test` still green.
+every screen (and its states) was screenshot-checked against the design; `npm test` still green.
 
 ## 3. Build order (follow the labs, not this list, day to day)
 

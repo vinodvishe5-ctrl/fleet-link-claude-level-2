@@ -189,9 +189,14 @@ framework). Build these files under `src/FleetLink.Api/wwwroot/`:
 - Wire `app.UseDefaultFiles(); app.UseStaticFiles();` into `Program.cs` (before the endpoints) and set
   `/api/meta` `BuildStage` to `"2.E — UI"`.
 
+**Verify visually (the 2.E technique):** don't trust "it rendered". For each screen, run the **screenshot
+loop** — Claude captures the running page with the pre-installed Playwright, opens the PNG, critiques it
+against the design tokens (alignment, spacing, overflow, off-brand), fixes, and re-screenshots until it
+matches. Do the awkward **states** too: empty list, the 404/409/validation error, a narrow width, a long value.
+
 **Definition of done (2.E):** `dotnet run` serves the UI at `/`; the list/detail/create/status/parts flows
 work against the real API; a rule violation shows the friendly message from the one error shape; branding
-comes only from the tokens.
+comes only from the tokens; every screen (and its states) was screenshot-checked against the design.
 
 ## 3. Build order (follow the labs, not this list, day to day)
 
