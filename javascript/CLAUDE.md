@@ -36,9 +36,13 @@ src/
 
 ## Project layout & build stage
 
-**Current stage: Module 2.D — API & business logic. `dtos/`, `services/` and domain `routes/` are now
-filled: the API enforces the FSD §5 rules in the services, with boundary validation kept consistent with
-them, and every failure returns the one `{ error, code }` shape. Build stage: `2.D — API; UI is 2.E`.**
+**Current stage: Module 2.E — UI. The API (2.D) is complete, and a static front-end under `public/`
+(design-system tokens + screens, jQuery) is served by Express and wired to the 2.D contract; client
+validation mirrors the FSD §5 rules. Build stage: `2.E — UI`.**
+
+- `public/` — the front-end: `css/design-system.css` (design tokens = the single styling source),
+  `js/api.js` (one method per 2.D endpoint), `js/app.js` (hash-router screens), `index.html` (shell).
+  Generated from the **API contract + the design system**, never free-form. Served via `express.static`.
 
 ```
 src/

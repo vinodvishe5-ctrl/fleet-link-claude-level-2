@@ -161,6 +161,34 @@ the status codes. `npm test` must be green before a layer is "done".
 Structured logging, error-handling middleware mapping to the shared error shape, and (2.F) a richer
 `CLAUDE.md`, a Skill / slash command, and a hook that enforce the conventions above automatically.
 
+### 2.E UI / front-end (Module 2.E — generate the UI from the API contract + a design system)
+
+Generate the UI from **two inputs — the 2.D API contract and a design system** — never from free-form
+prompts (those yield generic screens). The front-end is a small static app served by Express and wired to
+the same-origin API. **jQuery** is the team's front-end stack. Build these files under `public/`:
+
+- `public/css/design-system.css` — the design system as **design tokens** (CSS custom properties): colour,
+  spacing, type, radius, elevation, plus **status/priority tokens mapped to the FSD enums** so a badge
+  colour is never hand-picked per screen. Component classes only (`.fl-card`, `.fl-table`, `.fl-badge`,
+  `.fl-btn`, `.fl-field`, …). Re-skinning changes tokens here, not screens.
+- `public/js/api.js` — a thin API client with **one method per 2.D endpoint** (FSD §6). Generated FROM the
+  contract so front-end and back-end can't disagree. Every call resolves the DTO or rejects with the one
+  `{ status, error, code }` shape.
+- `public/js/app.js` — a tiny hash-router rendering the screens: **Vehicles** (list) → **Vehicle detail**
+  (info + odometer update + its work orders) → **New work order** (form) → **Work order detail** (costs +
+  status actions + add parts). Client-side validation **mirrors the FSD §5 rules** (dates, the state
+  machine, the stock check) so the 2.D "keep validation consistent" discipline reaches the client too —
+  the server stays authoritative.
+- `public/index.html` — the app shell: loads jQuery, the design system, then `api.js` + `app.js`; shows the
+  live `buildStage` from `/api/meta`.
+- Wire `express.static('public')` into `src/server.js` (static matched first; `/api/*` falls through) and
+  set `/api/meta` `buildStage` to `"2.E — UI"`.
+
+**Definition of done (2.E):** `npm start` serves the UI at `/`; the list, detail, create and status/parts
+flows all work against the real API; a rule violation (e.g. odometer decrease, over-stock, illegal
+transition) shows the friendly message from the one error shape; branding comes only from the tokens;
+`npm test` still green.
+
 ## 3. Build order (follow the labs, not this list, day to day)
 
 0. **2.B** confirm a spec-to-build plan + scaffold empty layer folders + `/api/meta` slice + `add-slice` skill → frame runs, no domain.

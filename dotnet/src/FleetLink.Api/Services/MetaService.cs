@@ -18,8 +18,8 @@ public sealed class MetaService : IMetaService
     public MetaDto GetMeta() => new(
         App: "FleetLink",
         Track: "dotnet",
-        Version: "0.4.0",
-        BuildStage: "2.D — API & business logic",
+        Version: "0.5.0",
+        BuildStage: "2.E — UI",
         PlannedEntities: new[] { "Depot", "Vehicle", "Driver", "Part", "WorkOrder", "WorkOrderPart" },
         Seed: new SeedCountsDto(
             Depots: _store.Depots.Count,

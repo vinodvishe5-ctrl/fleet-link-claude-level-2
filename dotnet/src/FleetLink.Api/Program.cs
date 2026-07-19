@@ -29,6 +29,11 @@ builder.Services.AddSingleton<IMetaService, MetaService>();
 
 var app = builder.Build();
 
+// Module 2.E — serve the front-end (design system + screens) from wwwroot/. It is generated FROM the API
+// contract and calls it over the same origin; index.html is served at '/'.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 // The one error shape for every failure — registered before the endpoints so it wraps them all.
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

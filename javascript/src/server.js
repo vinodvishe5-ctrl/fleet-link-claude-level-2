@@ -5,6 +5,7 @@
 // business rules (services/), thin routers (routes/), boundary validation (validation/) and ONE error
 // shape (middleware/errorHandler.js). Routers are wired below; the error handler is registered LAST.
 import express from 'express';
+import { fileURLToPath } from 'url';
 import { registerHealthRoutes } from './health.js';
 import metaRouter from './routes/meta.js';
 import depotsRouter from './routes/depots.js';
@@ -16,6 +17,11 @@ import store from './data/store.js';
 
 const app = express();
 app.use(express.json());
+
+// Module 2.E — serve the front-end (design system + screens) from public/. It is generated FROM the API
+// contract below and calls it over the same origin. Static files are matched first; /api/* falls through.
+const publicDir = fileURLToPath(new URL('../public', import.meta.url));
+app.use(express.static(publicDir));
 
 registerHealthRoutes(app);
 app.use('/api/meta', metaRouter);

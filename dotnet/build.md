@@ -169,6 +169,30 @@ for the status codes. Tests must be runnable with `dotnet test` and green before
 Structured logging, a global exception handler mapping to the problem shape, and (2.F) a richer
 `CLAUDE.md`, a Skill / slash command, and a hook that enforce the conventions above automatically.
 
+### 2.E UI / front-end (Module 2.E — generate the UI from the API contract + a design system)
+
+Generate the UI from **two inputs — the 2.D API contract and a design system** — never from free-form
+prompts. The reference build serves a small **static** front-end from `wwwroot/`, wired to the same-origin
+minimal API — the **same design-system + contract drives the UI regardless of stack** (Razor Pages or
+Blazor are equally valid for teams that prefer server-rendered; the point is the two inputs, not the
+framework). Build these files under `src/FleetLink.Api/wwwroot/`:
+
+- `wwwroot/css/design-system.css` — the design system as **design tokens** (CSS custom properties): colour,
+  spacing, type, radius, elevation, plus **status/priority tokens mapped to the FSD enums**. Component
+  classes only. Re-skinning changes tokens here, not screens.
+- `wwwroot/js/api.js` — a thin client with **one method per 2.D endpoint** (FSD §6), generated FROM the
+  contract; resolves the DTO or rejects with the one `{ status, error, code }` shape. jQuery `$.ajax`.
+- `wwwroot/js/app.js` — a hash-router rendering **Vehicles → Vehicle detail (info + odometer + work orders)
+  → New work order → Work order detail (costs + status actions + add parts)**. Client validation **mirrors
+  the FSD §5 rules** (dates, state machine, stock); the server stays authoritative.
+- `wwwroot/index.html` — the app shell; shows the live `buildStage` from `/api/meta`.
+- Wire `app.UseDefaultFiles(); app.UseStaticFiles();` into `Program.cs` (before the endpoints) and set
+  `/api/meta` `BuildStage` to `"2.E — UI"`.
+
+**Definition of done (2.E):** `dotnet run` serves the UI at `/`; the list/detail/create/status/parts flows
+work against the real API; a rule violation shows the friendly message from the one error shape; branding
+comes only from the tokens.
+
 ## 3. Build order (follow the labs, not this list, day to day)
 
 0. **2.B** confirm a spec-to-build plan + scaffold empty layer folders + `/api/meta` slice + `add-slice` skill → frame runs, no domain.

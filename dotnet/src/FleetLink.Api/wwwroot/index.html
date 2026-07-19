@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FleetLink</title>
+  <!-- The design system (tokens + components) is the single source of styling for every screen. -->
+  <link rel="stylesheet" href="/css/design-system.css">
+</head>
+<body>
+  <header class="fl-header">
+    <div class="fl-brand">Fleet<span>Link</span></div>
+    <nav><a href="#/vehicles">Vehicles</a></nav>
+    <div class="fl-spacer"></div>
+    <div class="fl-stage" id="stage">2.E — UI</div>
+  </header>
+
+  <main class="fl-main">
+    <!-- Every screen renders into here (js/app.js). -->
+    <div id="app"><div class="fl-empty">Loading…</div></div>
+  </main>
+
+  <!-- jQuery (the team's front-end stack). -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <!-- Generated FROM the API contract, then the UI logic. -->
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <!-- Show the live build stage from /api/meta (proves the UI is talking to the 2.D API). -->
+  <script>
+    $(function () {
+      FleetLinkApi ? fetch('/api/meta').then((r) => r.json()).then((m) => { $('#stage').text(m.buildStage); }).catch(() => {}) : null;
+    });
+  </script>
+</body>
+</html>

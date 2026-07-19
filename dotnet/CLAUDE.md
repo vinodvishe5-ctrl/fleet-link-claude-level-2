@@ -37,10 +37,14 @@ src/FleetLink.Api/
 
 ## Project layout & build stage
 
-**Current stage: Module 2.D — API & business logic. `Dtos/`, `Services/` and the domain `Endpoints/` are
-now filled: the API enforces the FSD §5 rules in the services (behind interfaces), with boundary
-validation kept consistent with them, and every failure returns the one `{ error, code }` shape via
-`Common/ExceptionHandlingMiddleware`. Build stage: `2.D — API; UI is 2.E`.**
+**Current stage: Module 2.E — UI. The API (2.D) is complete, and a static front-end under
+`src/FleetLink.Api/wwwroot/` (design-system tokens + screens, jQuery) is served via `UseDefaultFiles`/
+`UseStaticFiles` and wired to the 2.D contract; client validation mirrors the FSD §5 rules. The same
+design system + contract is used on both tracks (Razor/Blazor is the alternative). Build stage: `2.E — UI`.**
+
+- `wwwroot/` — the front-end: `css/design-system.css` (design tokens), `js/api.js` (one method per 2.D
+  endpoint), `js/app.js` (hash-router screens), `index.html` (shell). Generated from the **API contract +
+  the design system**, never free-form.
 
 ```
 src/FleetLink.Api/
