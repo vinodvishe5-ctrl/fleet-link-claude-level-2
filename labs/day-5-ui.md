@@ -61,10 +61,12 @@ The screen needs a reference to match and a client to call.
 
 **Checkpoint A1 — commit:** `git commit -am "Day 5 (2.E): design system + API client (the inputs)"`
 
-### A2. One screen, generated blind (15 min)
+### A2. One screen, generated from the design IMAGE — blind (15 min)
+
+There's a **design reference** in the repo (from the Day-4 baseline) at `docs/design/vehicles-list.png` — an exported-Figma-style mockup. You generate the screen **from that image** — this is how you add an image as context and generate UI from it — but with **no screenshot loop**, so Claude builds from the picture yet never sees its own result.
 
 **Prompt:**
-> "Build the app shell (index.html loading jQuery, the design system, api.js, app.js) and the Vehicles screen: a hash-router with a table of `GET /api/vehicles` (registration, make/model, odometer, status badge), each row linking to the vehicle. Wire the static server (`express.static('public')` on JS; `app.UseDefaultFiles()` + `app.UseStaticFiles()` on .NET). Build it in one pass from the design system. **Do not screenshot it or check it — just generate it.** Show me how to run it."
+> "Open the design reference at `docs/design/vehicles-list.png` and look at it. Build the app shell (index.html loading jQuery, the design system, api.js, app.js) and the Vehicles screen to **match that image** — header, page title, the table (registration, make/model, odometer, status badge), the status pill colours, the primary button — wiring the table to `GET /api/vehicles` and using the design tokens. Wire the static server (`express.static('public')` on JS; `app.UseDefaultFiles()` + `app.UseStaticFiles()` on .NET). Build it in one pass. **Do NOT screenshot your own result or check it — just generate it from the image.** Show me how to run it."
 
 **Do:** run it and look — but **don't fix it by hand.**
 ```bash
@@ -73,7 +75,7 @@ dotnet run --project src/FleetLink.Api
 # JavaScript
 npm start
 ```
-Open `http://localhost:5080/`. It renders, and it's plausibly off — badges not quite aligned, spacing uneven, maybe generic instead of your tokens. **Claude has no idea, because it never saw it.** That's the blind default. Commit it as the "before".
+Open `http://localhost:5080/`. Even though you gave it the design picture, it's plausibly off — badges not quite aligned, spacing uneven, drifted from the reference. **Claude built from the image but never checked its own render against it.** That's the blind default. Commit it as the "before".
 
 **Checkpoint A2 — commit:** `git commit -am "Day 5 (2.E): vehicles screen — BLIND first pass (before the loop)"`
 
@@ -86,14 +88,14 @@ Same screen, but now Claude looks at it. Leave the app running.
 ### B1. Screenshot and critique — no fixing yet (15 min)
 
 **Prompt:**
-> "The app is running at `http://localhost:5080/`. Give yourself eyes: write a small Playwright script (headless Chromium) that opens that URL and saves a screenshot to `tmp/vehicles.png`, run it, then **open** `tmp/vehicles.png` and look at it. Comparing what you see against `design-system.css`, list exactly what's wrong — misalignment, uneven spacing, overflow, anything off-brand or not using the tokens. Don't fix anything yet — just tell me what the screenshot shows."
+> "The app is running at `http://localhost:5080/`. Give yourself eyes: write a small Playwright script (headless Chromium) that opens that URL and saves a screenshot to `tmp/vehicles.png`, run it, then **open** `tmp/vehicles.png` and look at it. Now open the design reference `docs/design/vehicles-list.png` alongside it and **compare the two** — list exactly where your screenshot differs from the reference: misalignment, spacing, overflow, wrong colours, anything not matching the design or tokens. Don't fix anything yet — just tell me the differences."
 
-**Do:** read the critique. This was impossible before — the model is perceiving its own output and naming the flaws you also spotted.
+**Do:** read the critique. This was impossible before — the model is perceiving its own output *and the target picture*, and naming the gap.
 
-### B2. Fix, re-shoot, iterate to the reference (20 min)
+### B2. Fix, re-shoot, iterate until it matches the reference (20 min)
 
 **Prompt:**
-> "Now run the loop: fix the issues you listed, re-run the screenshot, and open the new PNG to check. Show me before and after. Keep iterating — fix, screenshot, compare to the design system — until the page matches the tokens and nothing's misaligned. Stop when a screenshot comes back with nothing worth changing, and tell me why you stopped."
+> "Now run the loop: fix the differences you listed, re-run the screenshot, and open the new PNG. Compare it again to `docs/design/vehicles-list.png`. Show me before and after. Keep iterating — fix, screenshot, compare to the reference — until your screenshot **matches** `docs/design/vehicles-list.png` and nothing's misaligned. Stop when a screenshot matches the reference, and tell me why you stopped."
 
 **Do:** watch it converge over a few passes. Refresh your own browser and confirm you agree. **This is the difference** between the blind version and the looped one — produce it yourself.
 
@@ -110,34 +112,54 @@ Same screen, but now Claude looks at it. Leave the app running.
 
 ---
 
-## Part C — Scale it and bank it (25 min)
+## Part C — Level it up, scale it, bank it (25 min)
 
-### C1. A second screen, matched to the first (15 min)
+### C1. Level up: install a UI / motion skill (5 min)
+
+A lever most people don't know: Claude Code has **plugins** — bundles of skills you install from a GitHub marketplace — and a front-end/motion skill changes what Claude produces **by default**. Prove it with a before/after, the same way you proved the loop.
+
+**Before (no skill):**
+> "On the vehicles screen, add a subtle loading state and a hover effect on the table rows — whatever you'd do by default. Screenshot the result to `tmp/before-skill.png` and show me."
+
+**Install a skill** (Claude Code commands — browse `/plugin` to see what's available; in an enterprise, use your **vetted/internal** marketplace):
+```
+/plugin marketplace add <owner/repo>
+/plugin install <frontend-or-motion-skill>@<marketplace>
+/plugin
+```
+
+**After (skill loaded):**
+> "Now that the front-end/motion skill is installed, do the same thing again — add the loading state and row hover the way the skill recommends (motion, transitions, micro-interactions, accessible states). Screenshot to `tmp/after-skill.png` and show me before-skill.png and after-skill.png side by side. Tell me what the skill changed."
+
+**Do:** same prompt, different result — the skill's instructions steer the generation. A **skill raises the baseline**; the **loop makes it match your reference**. Install once and the whole team inherits the better default. *(A Claude Code plugin is pulled over the network — not software installed on the machine.)*
+
+### C2. A second screen, matched to the first (15 min)
 
 **Prompt:**
 > "Add the write screens — create work order (client validation mirroring the FSD §5 rules), change status through the state machine, add parts against stock, update odometer. Then screenshot each new screen AND the vehicles screen you already finished, put them side by side, and make the new screens **match** the finished one — same spacing, components, tokens. Iterate with screenshots until they're consistent. Show me the comparison."
 
 **Do:** notice consistency became a screenshot comparison against a screen you trust — not a written rule to remember.
 
-**Checkpoint C1 — commit:** `git commit -am "Day 5 (2.E): write screens, matched to the reference by screenshot"`
+**Checkpoint C2 — commit:** `git commit -am "Day 5 (2.E): write screens, matched to the reference by screenshot"`
 
-### C2. Bank the loop + record the stage (10 min)
+### C3. Bank the loop + record the stage (10 min)
 
 **Prompt:**
 > "Add a short 'UI (2.E)' note to my track `CLAUDE.md`: the UI lives under `public/` (JS) / `wwwroot/` (.NET), is built from the API contract + design tokens, and **every screen is verified with the screenshot loop** — capture, critique against the design (alignment, spacing, overflow, states, tokens), fix, repeat. List that checklist. Then set `/api/meta` `buildStage` to `2.E — UI`. Keep it tight. Show me the diff."
 
 **Do:** that checklist is the seed of tomorrow (2.F turns it into a skill + hook).
 
-**Checkpoint C2 — commit:** `git commit -am "Day 5 (2.E): bank the screenshot-loop checklist in CLAUDE.md + record stage"`
+**Checkpoint C3 — commit:** `git commit -am "Day 5 (2.E): bank the screenshot-loop checklist in CLAUDE.md + record stage"`
 
 ---
 
 ## Done when…
 
 - [ ] Branched `day-5/<you>` from `upstream/main`; sign-in + screenshot path confirmed (Playwright available).
-- [ ] You built the vehicles screen **blind** and saw it come out plausibly wrong — committed as the "before".
-- [ ] You gave Claude eyes: it **screenshotted**, critiqued its own output, and **fixed it over several passes** — committed as the "after".
+- [ ] You generated the vehicles screen **from the design image** (`docs/design/vehicles-list.png`) and saw it come out plausibly wrong blind — committed as the "before".
+- [ ] You gave Claude eyes: it **screenshotted**, **compared against the reference image**, and **fixed it over several passes** until it matched — committed as the "after".
 - [ ] You pushed the UI through the **awkward states** (empty, error, narrow, long value) with the loop.
+- [ ] You saw a **skill change Claude's default output** (before/after installing a UI/motion plugin).
 - [ ] A **second screen** was kept consistent by matching a screenshot of the first.
 - [ ] The **screenshot-loop checklist** is banked in `CLAUDE.md`; `/api/meta` reads `2.E — UI`.
 - [ ] Your `day-5/<you>` branch is pushed.
