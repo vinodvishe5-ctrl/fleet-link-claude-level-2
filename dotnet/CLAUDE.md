@@ -37,22 +37,28 @@ src/FleetLink.Api/
 
 ## Project layout & build stage
 
-**Current stage: Module 2.C — data model. `Models/` (shapes) and `Data/` (state) are now filled;
-`Services/` and `Dtos/` stay empty until Module 2.D. Build stage: `2.C — data model; API is 2.D`.**
+**Current stage: Module 2.D — API & business logic. `Dtos/`, `Services/` and the domain `Endpoints/` are
+now filled: the API enforces the FSD §5 rules in the services (behind interfaces), with boundary
+validation kept consistent with them, and every failure returns the one `{ error, code }` shape via
+`Common/ExceptionHandlingMiddleware`. Build stage: `2.D — API; UI is 2.E`.**
 
 ```
 src/FleetLink.Api/
-  Models/     FSD entities + Enums (2.C) — shapes only, no logic, no derived fields
-  Data/       FleetStore + SeedData, in-memory, fixed Guids (2.C)
-  Endpoints/  HealthEndpoints (seed), MetaEndpoints (2.B; now reports the seed counts)
-  Services/   IMetaService/MetaService (non-domain) — domain services in 2.D
-  Dtos/       MetaDto (+ SeedCountsDto) — domain DTOs in 2.D
-  Program.cs  wires DI + maps the endpoint groups; logs the loaded seed counts
+  Models/      FSD entities + Enums (2.C); WorkOrder gained CompletedTotalCost — the rule-11 completion snapshot
+  Data/        FleetStore + SeedData, in-memory, fixed Guids (2.C)
+  Dtos/        ResponseDtos + RequestDtos + Mappers (the API exposes DTOs, never Models; enums as strings)
+  Services/    IWorkOrderService (FSD §5.2–5.11), IVehicleService (§5.7/§5.12), IDepotService, IPartService, Costing
+  Endpoints/   Depot/Vehicle/WorkOrder/Part endpoint groups — thin: validate, call service, map to a status code
+  Validation/  RequestValidators mirroring the service rules (Part C)
+  Common/      DomainException, Errors, IClock, Dates, Enums, ExceptionHandlingMiddleware (the one error shape)
+  Program.cs   registers store + IClock + the domain services; adds the exception middleware; maps the groups
+src/FleetLink.Tests/   xUnit — one test per FSD §5 rule + read side (dotnet test)
 ```
 
-Endpoints so far (all non-domain): `GET /health` (seed), `GET /api/meta` (now reports the seed counts).
-The `/api/meta` slice is the reference pattern for layering: endpoint → service → DTO, no rules in the
-endpoint. Follow it when the domain API is generated in 2.D.
+Every business rule lives in a **service** and cites its FSD §5 rule number in a comment; endpoints stay
+thin. Reads were built before writes on purpose (a read carries no rule). The hand-written `Mappers` are
+the dependency-light stand-in for an AutoMapper profile. Reports (`GET /api/reports/...`) are a later
+stretch (FSD §6).
 
 ## Guardrails
 

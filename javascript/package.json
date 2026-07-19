@@ -1,6 +1,6 @@
 {
   "name": "fleetlink",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "FleetLink — Level 2 running project (JavaScript track)",
   "type": "module",
   "main": "src/server.js",

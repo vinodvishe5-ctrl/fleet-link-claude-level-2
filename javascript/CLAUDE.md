@@ -36,22 +36,26 @@ src/
 
 ## Project layout & build stage
 
-**Current stage: Module 2.C — data model. `models/` (shapes) and `data/` (state) are now filled;
-`services/` and domain `routes/` stay empty until Module 2.D. Build stage: `2.C — data model; API is 2.D`.**
+**Current stage: Module 2.D — API & business logic. `dtos/`, `services/` and domain `routes/` are now
+filled: the API enforces the FSD §5 rules in the services, with boundary validation kept consistent with
+them, and every failure returns the one `{ error, code }` shape. Build stage: `2.D — API; UI is 2.E`.**
 
 ```
 src/
-  server.js   wires routers + middleware; seeds the store at startup
-  health.js   registerHealthRoutes  (seed)
-  routes/     meta.js (non-domain; now reports the seed counts) — domain routers in 2.D
-  services/   metaService.js (non-domain) — domain services in 2.D
-  models/     FSD entity factories + enums (2.C) — shapes only, no logic
-  data/       store.js + seed.js, in-memory, fixed uuids (2.C)
+  server.js       wires routers + the ONE error handler (registered last); seeds the store at startup
+  health.js       registerHealthRoutes  (seed)
+  dtos/           mappers.js — response DTOs (the API exposes DTOs, never entities); costs derived in the service
+  services/       business rules (workOrderService = FSD §5.2–5.11, vehicleService = §5.7/§5.12, costing); metaService (non-domain)
+  routes/         thin routers: depots, vehicles, work-orders, parts, meta — validate, call service, map to a status code
+  validation/     boundary validators mirroring the service rules (Part C)
+  middleware/     errorHandler (one { error, code } shape) + asyncHandler
+  models/         FSD entity factories + enums (2.C) — shapes only
+  data/           store.js + seed.js, in-memory, fixed uuids (2.C)
 ```
 
-Endpoints so far (all non-domain): `GET /health` (seed), `GET /api/meta` (now reports the seed counts).
-The `/api/meta` slice is the reference pattern for layering: router → service, no rules in the route.
-Follow it when the domain API is generated in 2.D.
+Every business rule lives in a **service** and cites its FSD §5 rule number in a comment; routes stay thin
+and the `/api/meta` slice is still the reference layering pattern. Reads were built before writes on
+purpose (a read carries no rule). Reports (`GET /api/reports/...`) are a later stretch (FSD §6).
 
 ## Guardrails
 

@@ -20,6 +20,11 @@ public class WorkOrder
     public Guid? AssignedDriverId { get; set; }            // nullable — optional assignment
     public decimal LabourCost { get; set; }                // >= 0
 
+    // The TotalCost frozen at completion (FSD rule 11). Null until the order is Completed. This is a
+    // completion SNAPSHOT — a real domain fact, distinct from the normally-derived PartsCost/TotalCost
+    // (which are still computed on the fly in the service, never stored). Added in Module 2.D.
+    public decimal? CompletedTotalCost { get; set; }
+
     public Vehicle? Vehicle { get; set; }
     public Driver? AssignedDriver { get; set; }
     public ICollection<WorkOrderPart> WorkOrderParts { get; set; } = new List<WorkOrderPart>();

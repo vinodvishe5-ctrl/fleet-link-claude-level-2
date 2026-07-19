@@ -1,5 +1,5 @@
 // In-memory store for the training build (FSD §8 · javascript/CLAUDE.md). A module-level store holding
-// arrays of each entity, loaded from the fixed seed. This is the runtime the API is built on in 2.D.
+// arrays of each entity, loaded from the fixed seed. This is the runtime the 2.D API reads and writes.
 // The agreed schema (../../docs/schema.sql) records how the same model maps to a real relational
 // database (SQL Server / Azure SQL); the API on top of this store is Module 2.D.
 import seed from './seed.js';

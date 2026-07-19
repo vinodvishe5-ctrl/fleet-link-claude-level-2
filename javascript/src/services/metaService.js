@@ -1,15 +1,15 @@
 // Non-domain app metadata. Introduced in Module 2.B to exercise the route → service layering before
 // any FleetLink entity exists. Deliberately NO business logic here — the `seed` counts below are read
-// straight from the store purely to PROVE the Module 2.C data model loaded (they are metadata about
-// the build, not a domain operation; the real read endpoints — GET /api/depots, … — arrive in 2.D).
+// straight from the store purely to PROVE the data model loaded. As of Module 2.D the real domain read
+// endpoints (GET /api/depots, /api/vehicles, …) exist; buildStage now records that the API layer landed.
 import store from '../data/store.js';
 
 export function getMeta() {
   return {
     app: 'FleetLink',
     track: 'javascript',
-    version: '0.3.0',
-    buildStage: '2.C — data model',
+    version: '0.4.0',
+    buildStage: '2.D — API & business logic',
     plannedEntities: ['Depot', 'Vehicle', 'Driver', 'Part', 'WorkOrder', 'WorkOrderPart'],
     seed: store.counts(),
   };
