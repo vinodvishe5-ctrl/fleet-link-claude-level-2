@@ -121,11 +121,10 @@ A lever most people don't know: Claude Code has **plugins** — bundles of skill
 **Before (no skill):**
 > "On the vehicles screen, add a subtle loading state and a hover effect on the table rows — whatever you'd do by default. Screenshot the result to `tmp/before-skill.png` and show me."
 
-**Install a skill** (Claude Code commands — browse `/plugin` to see what's available; in an enterprise, use your **vetted/internal** marketplace):
+**Install a skill** (Claude Code commands). We use Anthropic's own **frontend-design** plugin — first-party and vetted; in your org, point at your approved/internal marketplace instead. Browse `/plugin` to see what's installed:
 ```
-/plugin marketplace add <owner/repo>
-/plugin install <frontend-or-motion-skill>@<marketplace>
-/plugin
+/plugin marketplace add anthropics/claude-code
+/plugin install frontend-design@claude-code-plugins
 ```
 
 **After (skill loaded):**
