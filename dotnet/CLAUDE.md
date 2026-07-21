@@ -37,10 +37,15 @@ src/FleetLink.Api/
 
 ## Project layout & build stage
 
-**Current stage: Module 2.E — UI. The API (2.D) is complete, and a static front-end under
-`src/FleetLink.Api/wwwroot/` (design-system tokens + screens, jQuery) is served via `UseDefaultFiles`/
-`UseStaticFiles` and wired to the 2.D contract; client validation mirrors the FSD §5 rules. The same
-design system + contract is used on both tracks (Razor/Blazor is the alternative). Build stage: `2.E — UI`.**
+**Current stage: Module 2.F — Consistency. The app is complete through the 2.E UI; 2.F adds the
+consistency instruments (grown root `CLAUDE.md` + [`docs/standards.md`](../docs/standards.md); the
+`new-endpoint` skill, the `/standards-check` command, the guardrail hook, the `standards-reviewer`
+subagent — all in [`../.claude/`](../.claude/)). Build stage: `2.F — Consistency`.**
+
+Consistency is constrained **up front** here: add domain endpoints with the `new-endpoint` skill so the
+DTO → service-rule (with `// FSD §5.x`) → thin endpoint → validation → test pattern is identical every
+time. The guardrail hook blocks secrets/connection strings on every write. See the root `CLAUDE.md`
+"Consistency instruments" section.
 
 - `wwwroot/` — the front-end: `css/design-system.css` (design tokens), `js/api.js` (one method per 2.D
   endpoint), `js/app.js` (hash-router screens), `index.html` (shell). Generated from the **API contract +

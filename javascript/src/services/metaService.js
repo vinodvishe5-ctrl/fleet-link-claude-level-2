@@ -8,8 +8,8 @@ export function getMeta() {
   return {
     app: 'FleetLink',
     track: 'javascript',
-    version: '0.5.0',
-    buildStage: '2.E — UI',
+    version: '0.6.0',
+    buildStage: '2.F — Consistency',
     plannedEntities: ['Depot', 'Vehicle', 'Driver', 'Part', 'WorkOrder', 'WorkOrderPart'],
     seed: store.counts(),
   };

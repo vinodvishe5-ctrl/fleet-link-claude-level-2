@@ -195,6 +195,36 @@ flows all work against the real API; a rule violation (e.g. odometer decrease, o
 transition) shows the friendly message from the one error shape; branding comes only from the tokens;
 every screen (and its states) was screenshot-checked against the design; `npm test` still green.
 
+### 2.F Consistency instruments (Module 2.F — constrain generation up front)
+
+Turn the standards into instruments the whole team inherits, so generated code is consistent **before**
+review, not after. Nothing new in the domain — this layer is CLAUDE.md + `.claude/` + `docs/`. Build:
+
+- **Grow the standards** — the root [`CLAUDE.md`](../CLAUDE.md) holds the tight, always-on rules (naming,
+  layering, one error shape, logging, DTOs/enums, UI tokens) and points to [`docs/standards.md`](../docs/standards.md)
+  for the detail: **approved patterns AND named anti-patterns**, per rule. Keep `CLAUDE.md` short.
+- **Skill `new-endpoint`** — [`../.claude/skills/new-endpoint/SKILL.md`](../.claude/skills/new-endpoint/SKILL.md):
+  the approved way to add a **domain** endpoint — DTO → service rule citing `// FSD §5.x` → thin route →
+  validation → a `node --test` test. Mirrors the 2.D pattern so every endpoint is identical. (`add-slice`
+  stays for non-domain probe slices.)
+- **Command `/standards-check`** — [`../.claude/commands/standards-check.md`](../.claude/commands/standards-check.md):
+  reviews a diff (`git diff`, `--staged`, `main...HEAD`, or a path) against the standards and reports
+  drift by severity. Read-only.
+- **Hook (deterministic guardrail)** — [`../.claude/settings.json`](../.claude/settings.json) registers a
+  `PreToolUse` hook on `Edit|Write|MultiEdit` running [`../.claude/hooks/guard.mjs`](../.claude/hooks/guard.mjs),
+  which **blocks** a write containing a secret or connection string before it lands (the CLAUDE.md sandbox
+  rule, made deterministic). Node, so it runs on Windows/macOS/Linux alike.
+- **Subagent `standards-reviewer`** — [`../.claude/agents/standards-reviewer.md`](../.claude/agents/standards-reviewer.md):
+  a read-only reviewer for whole-layer / whole-branch audits, runnable in parallel.
+- **Record the stage** — set `/api/meta` `buildStage` to `"2.F — Consistency"` (and `version` `0.6.0`);
+  update `test/meta.test.js` to match.
+
+**Definition of done (2.F):** `npm start` and `npm test` still green with the new `buildStage`; `CLAUDE.md`
+is tight and links to `docs/standards.md`; the four instruments exist under `.claude/`; the guardrail hook
+**blocks** a test secret and **allows** clean code (`echo '{"tool_input":{"content":"..."}}' | node
+.claude/hooks/guard.mjs`); `/standards-check` runs; the `new-endpoint` skill is discoverable. Both tracks
+carry the same instruments.
+
 ## 3. Build order (follow the labs, not this list, day to day)
 
 0. **2.B** confirm a spec-to-build plan + scaffold empty layer folders + `/api/meta` slice + `add-slice` skill → frame runs, no domain.
