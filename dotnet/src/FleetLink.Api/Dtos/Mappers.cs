@@ -31,4 +31,8 @@ public static class Mappers
             w.OpenedDate, w.DueDate, w.CompletedDate,
             w.AssignedDriverId, w.LabourCost, partsCost, totalCost);
     }
+
+    // A work order's part line joined to its Part (Module 2.G hand-off endpoint). LineCost is derived.
+    public static WorkOrderPartLineDto ToLineDto(this WorkOrderPart wp, Part part) =>
+        new(wp.PartId, part.PartNumber, part.Name, wp.Quantity, part.UnitCost, wp.Quantity * part.UnitCost);
 }

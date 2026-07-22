@@ -9,6 +9,7 @@ namespace FleetLink.Api.Services;
 public interface IWorkOrderService
 {
     WorkOrderDto? GetWorkOrder(Guid id);
+    IReadOnlyList<WorkOrderPartLineDto> ListWorkOrderParts(Guid workOrderId);       // 2.G hand-off read
     WorkOrderDto CreateWorkOrder(Guid vehicleId, CreateWorkOrderRequest request);   // rules 2–6 (+7)
     WorkOrderDto ChangeStatus(Guid workOrderId, string? newStatus);                 // rules 9, 10, 11 (+7)
     WorkOrderDto AddParts(Guid workOrderId, IReadOnlyList<WorkOrderPartLine> lines); // rule 8

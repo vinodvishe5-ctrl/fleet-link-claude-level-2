@@ -24,3 +24,10 @@ public record WorkOrderDto(
     string Type, string Priority, string Status,
     DateOnly OpenedDate, DateOnly DueDate, DateOnly? CompletedDate,
     Guid? AssignedDriverId, decimal LabourCost, decimal PartsCost, decimal TotalCost);
+
+/// <summary>
+/// A work order's part line joined to its Part (Module 2.G hand-off endpoint). Read-only projection —
+/// LineCost is derived (Quantity × UnitCost), never stored.
+/// </summary>
+public record WorkOrderPartLineDto(
+    Guid PartId, string PartNumber, string Name, int Quantity, decimal UnitCost, decimal LineCost);

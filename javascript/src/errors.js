@@ -24,6 +24,7 @@ export const Errors = {
   backDated: () => new DomainError(400, 'back_dated', 'OpenedDate cannot be before today.'),          // rule 5
   criticalSla: () => new DomainError(400, 'critical_sla', 'Critical work must be due within 2 days of OpenedDate.'), // rule 6
   insufficientStock: () => new DomainError(409, 'insufficient_stock', 'Not enough stock for the requested quantity.'), // rule 8
+  invalidQuantity: () => new DomainError(400, 'invalid_quantity', 'Each part line needs an integer quantity of at least 1.'), // rule 8 (boundary — authoritative in the service, Module 2.H)
   completionRequiresAssignee: () => new DomainError(409, 'completion_requires_assignee', 'A non-inspection work order needs an assigned driver to complete.'), // rule 9
   illegalTransition: (from, to) => new DomainError(409, 'illegal_transition', `Illegal status transition ${from} → ${to}.`), // rule 10
   odometerDecrease: () => new DomainError(400, 'odometer_decrease', 'Odometer may only stay the same or increase.'), // rule 12

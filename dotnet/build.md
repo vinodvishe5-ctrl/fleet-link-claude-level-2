@@ -243,3 +243,25 @@ tracks carry the same instruments.
 - New endpoints return exactly the FSD status codes.
 - Every business rule touched has a passing test.
 - The diff was reviewed by a human before commit; the commit message says what changed and why.
+
+
+## 2.G / 2.H — Day 7: hand-off endpoint, debugging & RCA (for Claude Code)
+
+Build on the Day-6 toolkit. Files to create/change on `day-7/<you>` (.NET track):
+
+**2.G — the BA→dev hand-off read endpoint** (use the `new-endpoint` skill so it matches the API):
+- `Dtos/ResponseDtos.cs` — add `WorkOrderPartLineDto(Guid PartId, string PartNumber, string Name, int Quantity, decimal UnitCost, decimal LineCost)`.
+- `Dtos/Mappers.cs` — add `ToLineDto(this WorkOrderPart wp, Part part)` (LineCost derived).
+- `Services/IWorkOrderService.cs` + `Services/WorkOrderService.cs` — add `ListWorkOrderParts(Guid workOrderId)` (404 if unknown).
+- `Endpoints/WorkOrderEndpoints.cs` — add `GET /api/work-orders/{id:guid}/parts`.
+- `FleetLink.Tests/WorkOrderPartsAndGuardTests.cs` — the 200 (derived LineCost) and the 404.
+
+**2.H — the fix + authoritative guardrail** (FSD rule 8):
+- `Common/Errors.cs` — add `InvalidQuantity()` → 400 `invalid_quantity`.
+- `Services/WorkOrderService.cs` — in `AddParts`, reject `Quantity < 1` BEFORE mutating anything (the service never trusts the edge validator).
+- `Validation/RequestValidators.cs` — keep the boundary `Quantity >= 1` (mirrors the service).
+- `FleetLink.Tests/WorkOrderPartsAndGuardTests.cs` — `[Theory]` quantity 0 / -3 → `invalid_quantity`, stock unchanged.
+- `../labs/day-7/` — `incident-sample.log` (RCA material) and `symptom.md`.
+
+**Record the stage:** `Services/MetaService.cs` → Version `0.7.0`, BuildStage `2.H — Debugging & RCA`.
+Definition of done: `dotnet test` green; new endpoint returns the FSD status codes; the regression was red before the fix.

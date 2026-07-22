@@ -1,9 +1,10 @@
-// Work-order routes (Module 2.D). Read one, transition its status, and record parts used. Thin wiring:
-// validate the body, call the service, map to the FSD status code. Every rule is in workOrderService.
+// Work-order routes (Module 2.D). Read one, list its parts, transition its status, and record parts used.
+// Thin wiring: validate the body, call the service, map to the FSD status code. Every rule is in
+// workOrderService.
 import { Router } from 'express';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { Errors } from '../errors.js';
-import { getWorkOrder, changeStatus, addParts } from '../services/workOrderService.js';
+import { getWorkOrder, changeStatus, addParts, listWorkOrderParts } from '../services/workOrderService.js';
 import { validateChangeStatus, validateAddParts } from '../validation/validators.js';
 
 const router = Router();
@@ -12,6 +13,11 @@ router.get('/:id', asyncHandler((req, res) => {
   const workOrder = getWorkOrder(req.params.id);
   if (!workOrder) throw Errors.workOrderNotFound();
   res.json(workOrder);
+}));
+
+// GET /api/work-orders/{id}/parts → 200 (the parts recorded on the order) / 404 (Module 2.G hand-off)
+router.get('/:id/parts', asyncHandler((req, res) => {
+  res.json(listWorkOrderParts(req.params.id));
 }));
 
 // PATCH /api/work-orders/{id}/status → 200 / 409

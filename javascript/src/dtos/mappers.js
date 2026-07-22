@@ -34,3 +34,15 @@ export const toWorkOrderDto = (w, partsCost) => {
     partsCost, totalCost,
   };
 };
+
+// A work order's part lines, joined to their Part (Module 2.G hand-off endpoint). Read-only projection —
+// no rule here; the line cost is quantity x the part's current unit cost, derived on the fly like the
+// other costs (FSD §3.5), never stored.
+export const toWorkOrderPartLineDto = (wp, part) => ({
+  partId: wp.partId,
+  partNumber: part ? part.partNumber : null,
+  name: part ? part.name : null,
+  quantity: wp.quantity,
+  unitCost: part ? part.unitCost : 0,
+  lineCost: wp.quantity * (part ? part.unitCost : 0),
+});

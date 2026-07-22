@@ -39,6 +39,17 @@ public sealed class WorkOrderService : IWorkOrderService
         return w?.ToDto(Costing.PartsCostFor(_store, w.Id));
     }
 
+    // Read the parts recorded on a work order (Module 2.G hand-off endpoint) — 404 if unknown. Pure read.
+    public IReadOnlyList<WorkOrderPartLineDto> ListWorkOrderParts(Guid workOrderId)
+    {
+        _ = _store.WorkOrders.FirstOrDefault(x => x.Id == workOrderId) ?? throw Errors.WorkOrderNotFound();
+        var partsById = _store.Parts.ToDictionary(p => p.Id);
+        return _store.WorkOrderParts
+            .Where(wp => wp.WorkOrderId == workOrderId)
+            .Select(wp => wp.ToLineDto(partsById[wp.PartId]))
+            .ToList();
+    }
+
     // Create — FSD rules 2–6 (plus rule 7 as a consequence when the new order is a Breakdown).
     public WorkOrderDto CreateWorkOrder(Guid vehicleId, CreateWorkOrderRequest request)
     {
@@ -99,7 +110,9 @@ public sealed class WorkOrderService : IWorkOrderService
     }
 
     // Add parts used — FSD rule 8. Validate the whole request against current stock BEFORE mutating
-    // anything, so a bad line never half-applies.
+    // anything, so a bad line never half-applies. The quantity floor is re-checked here AUTHORITATIVELY
+    // (Module 2.H): the service never trusts the edge validator, so a caller that skipped it still cannot
+    // record a zero or negative quantity.
     public WorkOrderDto AddParts(Guid workOrderId, IReadOnlyList<WorkOrderPartLine> lines)
     {
         var w = _store.WorkOrders.FirstOrDefault(x => x.Id == workOrderId) ?? throw Errors.WorkOrderNotFound();
@@ -107,6 +120,7 @@ public sealed class WorkOrderService : IWorkOrderService
         var requested = new Dictionary<Guid, int>();
         foreach (var line in lines)
         {
+            if (line.Quantity < 1) throw Errors.InvalidQuantity();                                              // rule 8 — authoritative quantity floor
             if (_store.Parts.All(p => p.Id != line.PartId)) throw Errors.PartNotFound();
             requested[line.PartId] = requested.GetValueOrDefault(line.PartId) + line.Quantity;
         }

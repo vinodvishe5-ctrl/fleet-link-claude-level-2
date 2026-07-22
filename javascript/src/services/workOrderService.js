@@ -4,7 +4,7 @@
 import { randomUUID } from 'node:crypto';
 import store from '../data/store.js';
 import { Errors } from '../errors.js';
-import { toWorkOrderDto } from '../dtos/mappers.js';
+import { toWorkOrderDto, toWorkOrderPartLineDto } from '../dtos/mappers.js';
 import { partsCostFor } from './costing.js';
 import { recomputeBreakdownStatus } from './vehicleService.js';
 import { todayIso, diffDays } from '../dates.js';
@@ -24,6 +24,17 @@ const dto = (w) => toWorkOrderDto(w, partsCostFor(w.id));
 export function getWorkOrder(id) {
   const w = findWorkOrder(id);
   return w ? dto(w) : null;
+}
+
+// Read the parts recorded on a work order (Module 2.G hand-off endpoint) — 404 if the work order is
+// unknown. Pure read: joins each WorkOrderPart line to its Part and projects to the line DTO.
+export function listWorkOrderParts(workOrderId) {
+  const w = findWorkOrder(workOrderId);
+  if (!w) throw Errors.workOrderNotFound();
+  const partsById = new Map(store.parts.map((p) => [p.id, p]));
+  return store.workOrderParts
+    .filter((wp) => wp.workOrderId === workOrderId)
+    .map((wp) => toWorkOrderPartLineDto(wp, partsById.get(wp.partId)));
 }
 
 // Create — FSD rules 2–6 (plus rule 7 as a consequence when the new order is a Breakdown).
@@ -76,13 +87,16 @@ export function changeStatus(workOrderId, newStatus, clock) {
 }
 
 // Add parts used — FSD rule 8 (stock cannot go negative; decrement on save). Validate the whole request
-// against current stock BEFORE mutating anything, so a bad line never half-applies.
+// against current stock BEFORE mutating anything, so a bad line never half-applies. The quantity floor is
+// re-checked here AUTHORITATIVELY (Module 2.H): the service never trusts the edge validator, so a caller
+// that skipped it can still not record a zero or negative quantity.
 export function addParts(workOrderId, items) {
   const w = findWorkOrder(workOrderId);
   if (!w) throw Errors.workOrderNotFound();
 
   const requested = new Map();       // partId → total requested across the request
   for (const item of items) {
+    if (!Number.isInteger(item.quantity) || item.quantity < 1) throw Errors.invalidQuantity(); // rule 8 — authoritative quantity floor
     const part = store.parts.find((p) => p.id === item.partId);
     if (!part) throw Errors.partNotFound();
     requested.set(item.partId, (requested.get(item.partId) ?? 0) + item.quantity);

@@ -16,6 +16,7 @@ public static class Errors
     public static DomainException BackDated() => new(400, "back_dated", "OpenedDate cannot be before today.");          // rule 5
     public static DomainException CriticalSla() => new(400, "critical_sla", "Critical work must be due within 2 days of OpenedDate."); // rule 6
     public static DomainException InsufficientStock() => new(409, "insufficient_stock", "Not enough stock for the requested quantity."); // rule 8
+    public static DomainException InvalidQuantity() => new(400, "invalid_quantity", "Each part line needs an integer quantity of at least 1."); // rule 8 (boundary — authoritative in the service, Module 2.H)
     public static DomainException CompletionRequiresAssignee() => new(409, "completion_requires_assignee", "A non-inspection work order needs an assigned driver to complete."); // rule 9
     public static DomainException IllegalTransition(string from, string to) => new(409, "illegal_transition", $"Illegal status transition {from} → {to}."); // rule 10
     public static DomainException OdometerDecrease() => new(400, "odometer_decrease", "Odometer may only stay the same or increase."); // rule 12

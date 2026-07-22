@@ -37,10 +37,10 @@ src/FleetLink.Api/
 
 ## Project layout & build stage
 
-**Current stage: Module 2.F — Consistency. The app is complete through the 2.E UI; 2.F adds the
+**Current stage: Module 2.H — Debugging & RCA (Day 7 also adds the 2.G parts hand-off endpoint). The app is complete through the 2.E UI; 2.F adds the
 consistency instruments (grown root `CLAUDE.md` + [`docs/standards.md`](../docs/standards.md); the
 `new-endpoint` skill, the `/standards-check` command, the guardrail hook, the `standards-reviewer`
-subagent — all in [`../.claude/`](../.claude/)). Build stage: `2.F — Consistency`.**
+subagent — all in [`../.claude/`](../.claude/)). Build stage: `2.H — Debugging & RCA`.**
 
 Consistency is constrained **up front** here: add domain endpoints with the `new-endpoint` skill so the
 DTO → service-rule (with `// FSD §5.x`) → thin endpoint → validation → test pattern is identical every

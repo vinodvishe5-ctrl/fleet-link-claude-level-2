@@ -6,8 +6,9 @@ using FleetLink.Api.Validation;
 namespace FleetLink.Api.Endpoints;
 
 /// <summary>
-/// Work-order endpoints (Module 2.D): read one, transition its status, record parts used. Thin wiring —
-/// validate the body, call the service, map to the FSD status code. Every rule is in WorkOrderService.
+/// Work-order endpoints (Module 2.D): read one, list its parts, transition its status, record parts used.
+/// Thin wiring — validate the body, call the service, map to the FSD status code. Every rule is in
+/// WorkOrderService.
 /// </summary>
 public static class WorkOrderEndpoints
 {
@@ -15,6 +16,10 @@ public static class WorkOrderEndpoints
     {
         app.MapGet("/api/work-orders/{id:guid}", (Guid id, IWorkOrderService s) =>
             s.GetWorkOrder(id) is { } workOrder ? Results.Ok(workOrder) : throw Errors.WorkOrderNotFound());
+
+        // GET /api/work-orders/{id}/parts → 200 / 404 (Module 2.G hand-off)
+        app.MapGet("/api/work-orders/{id:guid}/parts", (Guid id, IWorkOrderService s) =>
+            Results.Ok(s.ListWorkOrderParts(id)));
 
         // PATCH /api/work-orders/{id}/status → 200 / 409
         app.MapPatch("/api/work-orders/{id:guid}/status",

@@ -241,3 +241,24 @@ carry the same instruments.
 - New routes return exactly the FSD status codes.
 - Every business rule touched has a passing test.
 - The diff was reviewed by a human before commit; the commit message says what changed and why.
+
+
+## 2.G / 2.H — Day 7: hand-off endpoint, debugging & RCA (for Claude Code)
+
+Build on the Day-6 toolkit. Files to create/change on `day-7/<you>` (JavaScript track):
+
+**2.G — the BA→dev hand-off read endpoint** (use the `new-endpoint` skill so it matches the API):
+- `src/dtos/mappers.js` — add `toWorkOrderPartLineDto(wp, part)` (partId, partNumber, name, quantity, unitCost, derived lineCost).
+- `src/services/workOrderService.js` — add `listWorkOrderParts(workOrderId)` (404 if the work order is unknown; join lines to their Part).
+- `src/routes/workOrders.js` — add `GET /:id/parts`.
+- `test/workOrderParts.test.js` — the 200 (with a derived lineCost) and the 404.
+
+**2.H — the fix + authoritative guardrail** (FSD rule 8):
+- `src/errors.js` — add `invalidQuantity()` → 400 `invalid_quantity`.
+- `src/services/workOrderService.js` — in `addParts`, reject a non-integer or `< 1` quantity BEFORE mutating anything (the service never trusts the edge validator).
+- `src/validation/validators.js` — keep the boundary `quantity >= 1` (mirrors the service).
+- `test/partsQuantityGuard.test.js` — service-level regression: quantity 0 / -3 / 1.5 → `invalid_quantity`, stock unchanged.
+- `labs/day-7/` — `incident-sample.log` (RCA material) and `symptom.md`.
+
+**Record the stage:** `src/services/metaService.js` → version `0.7.0`, buildStage `2.H — Debugging & RCA`; update `test/meta.test.js`.
+Definition of done: `npm test` green; new endpoint returns the FSD status codes; the regression was red before the fix.
