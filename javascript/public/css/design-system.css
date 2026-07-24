@@ -1,0 +1,139 @@
+/* FleetLink design system (Module 2.E).
+   This file is the "design system / Figma reference" extracted into DESIGN TOKENS — the single source
+   of colour, spacing, type, radius and elevation for the whole UI. Every screen is built only from these
+   tokens and the component classes below, so branding stays consistent across everything generated. To
+   re-skin FleetLink you change the tokens here, not the screens. Identical on both tracks. */
+
+:root {
+  /* Brand + neutral palette */
+  --fl-bg: #f4f6f9;
+  --fl-surface: #ffffff;
+  --fl-surface-2: #f8fafc;
+  --fl-border: #e2e8f0;
+  --fl-text: #1e293b;
+  --fl-muted: #64748b;
+  --fl-primary: #2f5fed;
+  --fl-primary-600: #244bc0;
+  --fl-primary-050: #eaf0ff;
+
+  /* Status tokens — mapped to the FSD enums so a badge colour is never hand-picked per screen */
+  --fl-active: #15803d;   --fl-active-bg: #dcfce7;
+  --fl-maintenance: #b45309; --fl-maintenance-bg: #fef3c7;
+  --fl-retired: #64748b;  --fl-retired-bg: #e2e8f0;
+  --fl-open: #1d4ed8;     --fl-open-bg: #dbeafe;
+  --fl-inprogress: #7c3aed; --fl-inprogress-bg: #ede9fe;
+  --fl-onhold: #b45309;   --fl-onhold-bg: #fef3c7;
+  --fl-completed: #15803d; --fl-completed-bg: #dcfce7;
+  --fl-cancelled: #b91c1c; --fl-cancelled-bg: #fee2e2;
+
+  /* Priority tokens */
+  --fl-critical: #b91c1c; --fl-high: #c2410c; --fl-medium: #b45309; --fl-low: #475569;
+
+  /* Spacing scale (4px base) */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-8: 48px;
+
+  /* Radius, elevation, type */
+  --radius: 10px; --radius-sm: 6px;
+  --shadow: 0 1px 2px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.06);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--fl-text);
+  background: var(--fl-bg);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+a { color: var(--fl-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---- Layout ---- */
+.fl-header {
+  background: var(--fl-surface);
+  border-bottom: 1px solid var(--fl-border);
+  padding: var(--sp-4) var(--sp-6);
+  display: flex; align-items: center; gap: var(--sp-4);
+}
+.fl-header .fl-brand { font-weight: 700; font-size: 18px; letter-spacing: -.2px; }
+.fl-header .fl-brand span { color: var(--fl-primary); }
+.fl-header nav { display: flex; gap: var(--sp-4); margin-left: var(--sp-4); }
+.fl-header .fl-spacer { flex: 1; }
+.fl-header .fl-stage { color: var(--fl-muted); font-size: 13px; }
+.fl-main { max-width: 1040px; margin: 0 auto; padding: var(--sp-6); }
+
+.fl-page-title { font-size: 22px; font-weight: 700; margin: 0 0 var(--sp-1); letter-spacing: -.3px; }
+.fl-page-sub { color: var(--fl-muted); margin: 0 0 var(--sp-5); }
+.fl-crumbs { color: var(--fl-muted); font-size: 13px; margin-bottom: var(--sp-4); }
+
+/* ---- Card ---- */
+.fl-card {
+  background: var(--fl-surface);
+  border: 1px solid var(--fl-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-5);
+}
+.fl-card h2 { font-size: 16px; margin: 0 0 var(--sp-4); }
+.fl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--sp-4); }
+.fl-kv .k { color: var(--fl-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+.fl-kv .v { font-weight: 600; font-size: 16px; }
+
+/* ---- Table ---- */
+.fl-table { width: 100%; border-collapse: collapse; }
+.fl-table th, .fl-table td { text-align: left; padding: var(--sp-3) var(--sp-3); border-bottom: 1px solid var(--fl-border); }
+.fl-table th { font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: var(--fl-muted); font-weight: 600; }
+.fl-table tbody tr:hover { background: var(--fl-surface-2); cursor: pointer; }
+.fl-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---- Badges ---- */
+.fl-badge {
+  display: inline-block; padding: 2px var(--sp-3); border-radius: 999px;
+  font-size: 12px; font-weight: 600; line-height: 1.6;
+}
+.fl-badge[data-status="Active"], .fl-badge[data-status="Completed"] { color: var(--fl-active); background: var(--fl-active-bg); }
+.fl-badge[data-status="InMaintenance"], .fl-badge[data-status="OnHold"] { color: var(--fl-maintenance); background: var(--fl-maintenance-bg); }
+.fl-badge[data-status="Retired"] { color: var(--fl-retired); background: var(--fl-retired-bg); }
+.fl-badge[data-status="Open"] { color: var(--fl-open); background: var(--fl-open-bg); }
+.fl-badge[data-status="InProgress"] { color: var(--fl-inprogress); background: var(--fl-inprogress-bg); }
+.fl-badge[data-status="Cancelled"] { color: var(--fl-cancelled); background: var(--fl-cancelled-bg); }
+.fl-badge[data-priority="Critical"] { color: #fff; background: var(--fl-critical); }
+.fl-badge[data-priority="High"] { color: #fff; background: var(--fl-high); }
+.fl-badge[data-priority="Medium"] { color: #fff; background: var(--fl-medium); }
+.fl-badge[data-priority="Low"] { color: #fff; background: var(--fl-low); }
+
+/* ---- Buttons ---- */
+.fl-btn {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  border: 1px solid var(--fl-border); background: var(--fl-surface); color: var(--fl-text);
+  padding: var(--sp-2) var(--sp-4); border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: background .12s, border-color .12s;
+}
+.fl-btn:hover { background: var(--fl-surface-2); }
+.fl-btn--primary { background: var(--fl-primary); border-color: var(--fl-primary); color: #fff; }
+.fl-btn--primary:hover { background: var(--fl-primary-600); }
+.fl-btn:disabled { opacity: .5; cursor: not-allowed; }
+.fl-actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+
+/* ---- Forms ---- */
+.fl-field { margin-bottom: var(--sp-4); }
+.fl-field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: var(--sp-1); }
+.fl-input, .fl-select {
+  width: 100%; padding: var(--sp-3); border: 1px solid var(--fl-border); border-radius: var(--radius-sm);
+  font-size: 14px; font-family: var(--font); background: var(--fl-surface);
+}
+.fl-input:focus, .fl-select:focus { outline: none; border-color: var(--fl-primary); box-shadow: 0 0 0 3px var(--fl-primary-050); }
+.fl-field .fl-error { color: var(--fl-cancelled); font-size: 12px; margin-top: var(--sp-1); min-height: 14px; }
+.fl-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+
+/* ---- Feedback ---- */
+.fl-alert { padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-sm); margin-bottom: var(--sp-4); font-size: 14px; }
+.fl-alert--error { color: var(--fl-cancelled); background: var(--fl-cancelled-bg); }
+.fl-alert--ok { color: var(--fl-active); background: var(--fl-active-bg); }
+.fl-muted { color: var(--fl-muted); }
+.fl-empty { text-align: center; color: var(--fl-muted); padding: var(--sp-8); }

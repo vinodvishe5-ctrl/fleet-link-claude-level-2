@@ -1,0 +1,37 @@
+# FleetLink — sample application log window (sanitised, sandbox)
+# Source: Azure App Insights export, api-fleetlink-uat, 2026-07-21 09:00–09:20 UTC.
+# This is the RCA material for the Day-7 lab. It is noisy on purpose: most lines are normal
+# background traffic; one fault repeats underneath it. Do NOT pre-filter it before Claude sees it.
+
+2026-07-21T09:01:02Z INFO  Health          GET /healthz 200 3ms
+2026-07-21T09:01:02Z INFO  Meta            GET /api/meta 200 5ms buildStage="2.G" version="0.6.1"
+2026-07-21T09:01:04Z INFO  Deploy          release v0.6.1 live — validators regenerated (PR #218 "tidy add-parts validation")
+2026-07-21T09:02:11Z INFO  VehicleRead     GET /api/vehicles 200 7ms count=4
+2026-07-21T09:02:19Z INFO  WorkOrderRead   GET /api/work-orders/55555555-0000-0000-0000-000000000002 200 4ms
+2026-07-21T09:03:40Z WARN  Costing         partsCost for WO 55555555-...-0002 did not change after POST /parts (expected increase) qtyLine=0
+2026-07-21T09:03:40Z WARN  Inventory       stock movement anomaly: PN-BRK-01 20 -> 20 on addParts (no decrement) reqQty=0
+2026-07-21T09:04:07Z INFO  DepotRead       GET /api/depots 200 6ms count=2
+2026-07-21T09:05:22Z WARN  Inventory       stock movement anomaly: PN-OIL-01 34 -> 37 on addParts (INCREASED) reqQty=-3
+2026-07-21T09:05:22Z WARN  Costing         totalCost for WO 55555555-...-0007 DECREASED after adding parts: 420.00 -> 285.00 qtyLine=-3
+2026-07-21T09:05:23Z INFO  Auth            token refreshed for svc-fleetlink (routine)
+2026-07-21T09:06:48Z WARN  Costing         partsCost for WO 55555555-...-0011 did not change after POST /parts (expected increase) qtyLine=0
+2026-07-21T09:07:01Z ERROR ReportExport    monthly parts-usage report: line with quantity=0 produced divide-by-zero in avg-cost-per-unit; row skipped WO=55555555-...-0002
+2026-07-21T09:07:33Z INFO  VehicleRead     GET /api/vehicles/22222222-0000-0000-0000-000000000001 200 3ms
+2026-07-21T09:08:10Z WARN  Inventory       stock movement anomaly: PN-BRK-01 18 -> 18 on addParts (no decrement) reqQty=0
+2026-07-21T09:08:55Z WARN  RateLimit       client 10.4.2.9 throttled (routine, unrelated)
+2026-07-21T09:09:12Z WARN  Costing         totalCost for WO 55555555-...-0009 DECREASED after adding parts: 1120.00 -> 900.00 qtyLine=-4
+2026-07-21T09:09:13Z WARN  Inventory       stock movement anomaly: PN-BAT-01 8 -> 12 on addParts (INCREASED) reqQty=-4
+2026-07-21T09:10:02Z INFO  Health          GET /healthz 200 2ms
+2026-07-21T09:11:40Z INFO  WorkOrderWrite  PATCH /api/work-orders/55555555-...-0002/status 200 6ms Open->InProgress
+2026-07-21T09:12:19Z WARN  Costing         partsCost for WO 55555555-...-0014 did not change after POST /parts (expected increase) qtyLine=0
+2026-07-21T09:13:05Z ERROR ReportExport    monthly parts-usage report: line with quantity=0 produced divide-by-zero in avg-cost-per-unit; row skipped WO=55555555-...-0011
+2026-07-21T09:14:31Z INFO  DriverRead      GET /api/drivers 200 5ms count=3
+2026-07-21T09:15:48Z WARN  Inventory       stock movement anomaly: PN-OIL-01 37 -> 40 on addParts (INCREASED) reqQty=-3
+2026-07-21T09:16:20Z INFO  Meta            GET /api/meta 200 4ms
+2026-07-21T09:17:59Z WARN  Costing         totalCost for WO 55555555-...-0016 DECREASED after adding parts: 300.00 -> 165.00 qtyLine=-3
+2026-07-21T09:18:44Z INFO  Health          GET /healthz 200 3ms
+2026-07-21T09:19:10Z WARN  Deploy          reminder: v0.6.1 changed only Validation/validators — no service change in PR #218
+
+# ~30 lines. The dominant cluster: addParts accepting qtyLine <= 0, so stock does not decrement
+# (or INCREASES on negative), totals fall instead of rise, and a downstream report divides by zero.
+# The breadcrumb: it all starts right after v0.6.1, whose only change was the parts validator.

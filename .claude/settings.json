@@ -1,0 +1,16 @@
+{
+  "$comment": "FleetLink project settings (Module 2.F). The hook below is the deterministic half of the consistency toolkit: it runs on EVERY Edit/Write/MultiEdit, before the write lands, and blocks anything that looks like a secret or a connection string (the CLAUDE.md sandbox rule). Standards drift (layering, naming, magic-int enums) is handled by the /standards-check command and the standards-reviewer subagent — this hook is only for the must-never-happen. Node is used (not bash) so it runs the same on Windows, macOS and Linux.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/guard.mjs"
+          }
+        ]
+      }
+    ]
+  }
+}

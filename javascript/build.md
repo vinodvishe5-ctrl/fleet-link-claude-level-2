@@ -38,16 +38,16 @@ is all that exists on Day 1.
 
 ### 2.0 Scaffold & first slice (Module 2.B) — **TODAY**
 
-Module 2.B is the **Claude Code foundations** layer: onboard onto the existing skeleton (brownfield),
-then scaffold the frame the later modules fill (greenfield) and prove it with **one non-domain slice**.
+Module 2.B is **spec-driven development**: turn the FSD into a confirmed build plan, then execute its
+first step — scaffold the frame the later slices fill and prove it with **one non-domain slice** — and
+capture the slice procedure as a **skill**. Everything traces to the FSD.
 **Do not build any FleetLink entity, seed data or business rule here — that is 2.C.**
 
-**Brownfield (onboard on the existing skeleton):**
-- Add a `GET /version` route that **mirrors the existing `health.js` pattern exactly** (same style, no
-  new libraries). It returns `{ "app": "FleetLink", "version": "0.2.0" }`. Wire it in `server.js` next to
-  the health route.
+**Plan (human-owned, no code):** the trainee has Claude draft a build plan from `../docs/FSD-FleetLink.md`
+and `../docs/build-sequence.md` (the vertical slices, in order, with checkpoints) and **confirms it**,
+saving it as `day2/plan.md`. Claude Code does not generate this — it is the human deliverable of Part A.
 
-**Greenfield (scaffold the layered structure):** create the empty layer folders, each with a short
+**Scaffold the layered structure:** create the empty layer folders, each with a short
 `README.md` (or `.gitkeep`) naming what it holds and which module fills it — **folders only, no domain code**:
 ```
 src/
@@ -70,8 +70,60 @@ src/
 **Also (2.B):** add a short **"Project layout & build stage"** section to `javascript/CLAUDE.md` recording
 the scaffolded layout and stating "current stage: 2.B — scaffold; domain arrives in 2.C". Keep it tight.
 
-**Definition of done (2.B):** `npm start` works; `/health`, `/version` and `/api/meta` all respond;
+**Skill (2.B, both tracks — repo root):** create a Claude Code project skill at
+`.claude/skills/add-slice/SKILL.md` that captures the `/api/meta` layered pattern — given a route path,
+name and fixed non-domain response it adds a slice (service with no logic + thin route), detects the
+track, follows both `CLAUDE.md` files and the `/api/meta` reference, and **stops at the diff**. It must
+refuse FSD entities / business rules (2.C/2.D). This is a first taste; 2.F builds the full skills/hooks
+toolkit. (Skill lives at the repo root so it applies to both tracks.)
+
+**Definition of done (2.B):** `day2/plan.md` exists (human-confirmed, traces to the FSD); `npm start`
+works; `/health` and `/api/meta` respond;
+the `add-slice` skill exists and produces a slice in the same layered shape;
 `/api/meta` flows through a service; `npm test` green; **zero** business rules and **zero** FSD entities exist yet.
+
+### 2.C Data model & seed (Module 2.C — Building with Claude Code: where everything lives) — **TODAY**
+
+Module 2.C fills the **first real layer** into the frame 2.B scaffolded. The teaching lens is
+**Claude Code and file structure**, not data-modelling theory: the skill today is deciding **which
+file holds what** and placing each piece in its **one right home**, so both the team and Claude find
+things where they expect. You build the *shapes* and the *state* only — **no rules, no routes** (those
+are 2.D and their folders stay empty on purpose).
+
+**Placement map — the five kinds of thing, and where each goes:**
+```
+docs/                  human-owned truth  → design record + schema go here TODAY
+src/
+  models/    SHAPES     → entity shapes/factories + enum values  (fill TODAY — no logic, no data)
+  data/      STATE      → store.js + seed.js                     (fill TODAY — the actual data)
+  services/  RULES      → (stays empty — Module 2.D)
+  routes/    WIRING     → (exists: health, meta — domain routes in 2.D)
+```
+
+**Confirm first (human-owned):** the trainee has Claude read `../docs/FSD-FleetLink.md` §3–§4, propose
+the entities/attributes/relationships, and **confirms** the draft — accepting what the spec states,
+cutting what Claude inferred (a driver→vehicle link, a stock-per-depot table, stored `totalCost`/
+`partsCost` fields, an over-normalised `city` table, a `user`/`role` model — all out per FSD §9). The
+confirmed design is written to **`../docs/data-model.md`** (what was agreed **and** what was rejected
+and why) and the agreed schema to **`../docs/schema.sql`**. These are **design records → they live in
+`docs/`**, the human-owned truth Claude reads but never rewrites.
+
+Then place the code (see the detail in 2.1–2.2 below):
+- **`src/models/`** — a shape/factory per FSD entity + the enum value sets, FSD names exactly.
+  **Shapes only** — no rules, no derived fields (`partsCost`/`totalCost` are computed in the service
+  layer in 2.D, **not stored**).
+- **`src/data/`** — `store.js` (the in-memory holder) + `seed.js` (FSD §7 sample, **fixed uuids**
+  shared with the .NET track). **State only.**
+- Update `/api/meta` so `buildStage` reads `"2.C — data model"` and it reports the **seed counts**
+  (2 depots, 4 vehicles, 3 drivers, 4 parts, 3 work orders) as proof the layer loaded.
+- Add a **"Data model (2.C)"** note to `javascript/CLAUDE.md` recording that `models/` and `data/` are
+  now filled and the current stage is `2.C — data model; API is 2.D`.
+
+**Definition of done (2.C):** `docs/data-model.md` + `docs/schema.sql` exist and match the FSD;
+`src/models/` holds the six entity shapes + enum sets (no logic); `src/data/` holds `store.js` +
+`seed.js` (fixed uuids); `npm start` works, `/health` green, `/api/meta` reports the real seed counts,
+`npm test` green; `src/services/` remains **empty**; every diff reviewed for **correct placement**
+before commit.
 
 ### 2.1 Models (`src/models/`) — Module 2.C
 A shape/factory per FSD entity, names matching the FSD exactly:
@@ -109,9 +161,73 @@ the status codes. `npm test` must be green before a layer is "done".
 Structured logging, error-handling middleware mapping to the shared error shape, and (2.F) a richer
 `CLAUDE.md`, a Skill / slash command, and a hook that enforce the conventions above automatically.
 
+### 2.E UI / front-end (Module 2.E — generate the UI from the API contract + a design system)
+
+Generate the UI from **two inputs — the 2.D API contract and a design system** — never from free-form
+prompts (those yield generic screens). The front-end is a small static app served by Express and wired to
+the same-origin API. **jQuery** is the team's front-end stack. Build these files under `public/`:
+
+- `public/css/design-system.css` — the design system as **design tokens** (CSS custom properties): colour,
+  spacing, type, radius, elevation, plus **status/priority tokens mapped to the FSD enums** so a badge
+  colour is never hand-picked per screen. Component classes only (`.fl-card`, `.fl-table`, `.fl-badge`,
+  `.fl-btn`, `.fl-field`, …). Re-skinning changes tokens here, not screens.
+- `public/js/api.js` — a thin API client with **one method per 2.D endpoint** (FSD §6). Generated FROM the
+  contract so front-end and back-end can't disagree. Every call resolves the DTO or rejects with the one
+  `{ status, error, code }` shape.
+- `public/js/app.js` — a tiny hash-router rendering the screens: **Vehicles** (list) → **Vehicle detail**
+  (info + odometer update + its work orders) → **New work order** (form) → **Work order detail** (costs +
+  status actions + add parts). Client-side validation **mirrors the FSD §5 rules** (dates, the state
+  machine, the stock check) so the 2.D "keep validation consistent" discipline reaches the client too —
+  the server stays authoritative.
+- `public/index.html` — the app shell: loads jQuery, the design system, then `api.js` + `app.js`; shows the
+  live `buildStage` from `/api/meta`.
+- Wire `express.static('public')` into `src/server.js` (static matched first; `/api/*` falls through) and
+  set `/api/meta` `buildStage` to `"2.E — UI"`.
+
+**Verify visually (the 2.E technique):** don't trust "it rendered". For each screen, run the **screenshot
+loop** — Claude captures the running page with the pre-installed Playwright (`node tmp/shot.mjs <url> <png>`),
+opens the PNG, critiques it against the design tokens (alignment, spacing, overflow, off-brand), fixes, and
+re-screenshots until it matches. Do the awkward **states** too: empty list, the 404/409/validation error,
+a narrow width (375px), a very long value.
+
+**Definition of done (2.E):** `npm start` serves the UI at `/`; the list, detail, create and status/parts
+flows all work against the real API; a rule violation (e.g. odometer decrease, over-stock, illegal
+transition) shows the friendly message from the one error shape; branding comes only from the tokens;
+every screen (and its states) was screenshot-checked against the design; `npm test` still green.
+
+### 2.F Consistency instruments (Module 2.F — constrain generation up front)
+
+Turn the standards into instruments the whole team inherits, so generated code is consistent **before**
+review, not after. Nothing new in the domain — this layer is CLAUDE.md + `.claude/` + `docs/`. Build:
+
+- **Grow the standards** — the root [`CLAUDE.md`](../CLAUDE.md) holds the tight, always-on rules (naming,
+  layering, one error shape, logging, DTOs/enums, UI tokens) and points to [`docs/standards.md`](../docs/standards.md)
+  for the detail: **approved patterns AND named anti-patterns**, per rule. Keep `CLAUDE.md` short.
+- **Skill `new-endpoint`** — [`../.claude/skills/new-endpoint/SKILL.md`](../.claude/skills/new-endpoint/SKILL.md):
+  the approved way to add a **domain** endpoint — DTO → service rule citing `// FSD §5.x` → thin route →
+  validation → a `node --test` test. Mirrors the 2.D pattern so every endpoint is identical. (`add-slice`
+  stays for non-domain probe slices.)
+- **Command `/standards-check`** — [`../.claude/commands/standards-check.md`](../.claude/commands/standards-check.md):
+  reviews a diff (`git diff`, `--staged`, `main...HEAD`, or a path) against the standards and reports
+  drift by severity. Read-only.
+- **Hook (deterministic guardrail)** — [`../.claude/settings.json`](../.claude/settings.json) registers a
+  `PreToolUse` hook on `Edit|Write|MultiEdit` running [`../.claude/hooks/guard.mjs`](../.claude/hooks/guard.mjs),
+  which **blocks** a write containing a secret or connection string before it lands (the CLAUDE.md sandbox
+  rule, made deterministic). Node, so it runs on Windows/macOS/Linux alike.
+- **Subagent `standards-reviewer`** — [`../.claude/agents/standards-reviewer.md`](../.claude/agents/standards-reviewer.md):
+  a read-only reviewer for whole-layer / whole-branch audits, runnable in parallel.
+- **Record the stage** — set `/api/meta` `buildStage` to `"2.F — Consistency"` (and `version` `0.6.0`);
+  update `test/meta.test.js` to match.
+
+**Definition of done (2.F):** `npm start` and `npm test` still green with the new `buildStage`; `CLAUDE.md`
+is tight and links to `docs/standards.md`; the four instruments exist under `.claude/`; the guardrail hook
+**blocks** a test secret and **allows** clean code (`echo '{"tool_input":{"content":"..."}}' | node
+.claude/hooks/guard.mjs`); `/standards-check` runs; the `new-endpoint` skill is discoverable. Both tracks
+carry the same instruments.
+
 ## 3. Build order (follow the labs, not this list, day to day)
 
-0. **2.B** brownfield `/version` + scaffold empty layer folders + `/api/meta` slice → frame runs, no domain.
+0. **2.B** confirm a spec-to-build plan + scaffold empty layer folders + `/api/meta` slice + `add-slice` skill → frame runs, no domain.
 1. **2.C** models + store + seed + read routes → app lists real seed data.
 2. **2.D** services with rules → write routes → validation → tests green.
 3. **2.E** UI against the API contract (jQuery / vanilla / a light framework, per the team's design
@@ -125,3 +241,24 @@ Structured logging, error-handling middleware mapping to the shared error shape,
 - New routes return exactly the FSD status codes.
 - Every business rule touched has a passing test.
 - The diff was reviewed by a human before commit; the commit message says what changed and why.
+
+
+## 2.G / 2.H — Day 7: hand-off endpoint, debugging & RCA (for Claude Code)
+
+Build on the Day-6 toolkit. Files to create/change on `day-7/<you>` (JavaScript track):
+
+**2.G — the BA→dev hand-off read endpoint** (use the `new-endpoint` skill so it matches the API):
+- `src/dtos/mappers.js` — add `toWorkOrderPartLineDto(wp, part)` (partId, partNumber, name, quantity, unitCost, derived lineCost).
+- `src/services/workOrderService.js` — add `listWorkOrderParts(workOrderId)` (404 if the work order is unknown; join lines to their Part).
+- `src/routes/workOrders.js` — add `GET /:id/parts`.
+- `test/workOrderParts.test.js` — the 200 (with a derived lineCost) and the 404.
+
+**2.H — the fix + authoritative guardrail** (FSD rule 8):
+- `src/errors.js` — add `invalidQuantity()` → 400 `invalid_quantity`.
+- `src/services/workOrderService.js` — in `addParts`, reject a non-integer or `< 1` quantity BEFORE mutating anything (the service never trusts the edge validator).
+- `src/validation/validators.js` — keep the boundary `quantity >= 1` (mirrors the service).
+- `test/partsQuantityGuard.test.js` — service-level regression: quantity 0 / -3 / 1.5 → `invalid_quantity`, stock unchanged.
+- `labs/day-7/` — `incident-sample.log` (RCA material) and `symptom.md`.
+
+**Record the stage:** `src/services/metaService.js` → version `0.7.0`, buildStage `2.H — Debugging & RCA`; update `test/meta.test.js`.
+Definition of done: `npm test` green; new endpoint returns the FSD status codes; the regression was red before the fix.

@@ -36,18 +36,18 @@ that exists on Day 1.
 
 ## 2. The target application (built across the modules)
 
-### 2.0 Scaffold & first slice (Module 2.B) — **TODAY**
+### 2.0 Plan + scaffold + first slice (Module 2.B — Spec-Driven Development) — **TODAY**
 
-Module 2.B is the **Claude Code foundations** layer: onboard onto the existing skeleton (brownfield),
-then scaffold the frame the later modules fill (greenfield) and prove it with **one non-domain slice**.
+Module 2.B is **spec-driven development**: turn the FSD into a confirmed build plan, then execute its
+first step — scaffold the frame the later slices fill and prove it with **one non-domain slice** — and
+capture the slice procedure as a **skill**. Everything traces to the FSD.
 **Do not build any FleetLink entity, seed data, DTO or business rule here — that is 2.C.**
 
-**Brownfield (onboard on the existing skeleton):**
-- Add a `GET /version` endpoint that **mirrors the existing `HealthEndpoints` pattern exactly** (same
-  folder, same minimal-API style, no new libraries). It returns `{ "app": "FleetLink", "version": "0.2.0" }`.
-  Wire it in `Program.cs` next to the health mapping.
+**Plan (human-owned, no code):** the trainee has Claude draft a build plan from `../docs/FSD-FleetLink.md`
+and `../docs/build-sequence.md` (the vertical slices, in order, with checkpoints) and **confirms it**,
+saving it as `day2/plan.md`. Claude Code does not generate this — it is the human deliverable of Part A.
 
-**Greenfield (scaffold the layered structure):** create the empty layer folders, each with a short
+**Scaffold the layered structure:** create the empty layer folders, each with a short
 `README.md` naming what it holds and which module fills it — **folders only, no domain code**:
 ```
 src/FleetLink.Api/
@@ -72,8 +72,59 @@ src/FleetLink.Api/
 **Also (2.B):** add a short **"Project layout & build stage"** section to `dotnet/CLAUDE.md` recording the
 scaffolded layout and stating "current stage: 2.B — scaffold; domain arrives in 2.C". Keep it tight.
 
-**Definition of done (2.B):** `dotnet run` works; `/health`, `/version` and `/api/meta` all respond;
+**Skill (2.B, both tracks — repo root):** create a Claude Code project skill at
+`.claude/skills/add-slice/SKILL.md` that captures the `/api/meta` layered pattern — given a route path,
+name and fixed non-domain response it adds a slice (service with no logic + thin endpoint), detects the
+track, follows both `CLAUDE.md` files and the `/api/meta` reference, and **stops at the diff**. It must
+refuse FSD entities / business rules (2.C/2.D). This is a first taste; 2.F builds the full skills/hooks
+toolkit. (Skill lives at the repo root so it applies to both tracks.)
+
+**Definition of done (2.B):** `day2/plan.md` exists (human-confirmed, traces to the FSD); `dotnet run`
+works; `/health` and `/api/meta` respond; the `add-slice` skill exists and produces a slice in the same
+layered shape;
 `/api/meta` flows through a service; **zero** business rules and **zero** FSD entities exist yet.
+
+### 2.C Data model & seed (Module 2.C — Building with Claude Code: where everything lives) — **TODAY**
+
+Module 2.C fills the **first real layer** into the frame 2.B scaffolded. The teaching lens is
+**Claude Code and file structure**, not data-modelling theory: the skill today is deciding **which
+file holds what** and placing each piece in its **one right home**, so both the team and Claude find
+things where they expect. You build the *shapes* and the *state* only — **no rules, no DTOs, no
+endpoints** (those are 2.D and their folders stay empty on purpose).
+
+**Placement map — the five kinds of thing, and where each goes:**
+```
+docs/                       human-owned truth  → design record + schema go here TODAY
+src/FleetLink.Api/
+  Models/     SHAPES         → entities + enums          (fill TODAY — no logic, no data)
+  Data/       STATE          → FleetStore + SeedData      (fill TODAY — the actual data)
+  Dtos/       CONTRACT       → (stays empty — Module 2.D)
+  Services/   RULES          → (stays empty — Module 2.D)
+  Endpoints/  WIRING         → (exists: Health, Meta — domain endpoints in 2.D)
+```
+
+**Confirm first (human-owned):** the trainee has Claude read `../docs/FSD-FleetLink.md` §3–§4, propose
+the entities/attributes/relationships, and **confirms** the draft — accepting what the spec states,
+cutting what Claude inferred (a driver→vehicle link, a stock-per-depot table, stored `TotalCost`/
+`PartsCost` columns, an over-normalised `City` table, a `User`/`Role` model — all out per FSD §9).
+The confirmed design is written to **`../docs/data-model.md`** (what was agreed **and** what was
+rejected and why) and the agreed schema to **`../docs/schema.sql`**. These are **design records → they
+live in `docs/`**, the human-owned truth Claude reads but never rewrites.
+
+Then place the code (see the detail in 2.1–2.2 below):
+- **`Models/`** — the six entities + five enums, FSD names exactly. **Shapes only** — no rules, no
+  derived columns (`PartsCost`/`TotalCost` are computed in the service layer in 2.D, **not stored**).
+- **`Data/`** — `FleetStore` (the in-memory holder) + `SeedData` (FSD §7 sample, **fixed Guids** shared
+  with the JS track). **State only.**
+- Update `/api/meta` so `buildStage` reads `"2.C — data model"` and it reports the **seed counts**
+  (2 depots, 4 vehicles, 3 drivers, 4 parts, 3 work orders) as proof the layer loaded.
+- Add a **"Data model (2.C)"** note to `dotnet/CLAUDE.md` recording that `Models/` and `Data/` are now
+  filled and the current stage is `2.C — data model; API is 2.D`.
+
+**Definition of done (2.C):** `docs/data-model.md` + `docs/schema.sql` exist and match the FSD;
+`Models/` holds the six entities + five enums (no logic); `Data/` holds `FleetStore` + `SeedData`
+(fixed Guids); `dotnet run` works, `/health` green, `/api/meta` reports the real seed counts;
+`Services/`, `Dtos/` remain **empty**; every diff reviewed for **correct placement** before commit.
 
 ### 2.1 Models (`src/FleetLink.Api/Models/`) — Module 2.C
 One class per FSD entity, names matching the FSD exactly:
@@ -118,9 +169,67 @@ for the status codes. Tests must be runnable with `dotnet test` and green before
 Structured logging, a global exception handler mapping to the problem shape, and (2.F) a richer
 `CLAUDE.md`, a Skill / slash command, and a hook that enforce the conventions above automatically.
 
+### 2.E UI / front-end (Module 2.E — generate the UI from the API contract + a design system)
+
+Generate the UI from **two inputs — the 2.D API contract and a design system** — never from free-form
+prompts. The reference build serves a small **static** front-end from `wwwroot/`, wired to the same-origin
+minimal API — the **same design-system + contract drives the UI regardless of stack** (Razor Pages or
+Blazor are equally valid for teams that prefer server-rendered; the point is the two inputs, not the
+framework). Build these files under `src/FleetLink.Api/wwwroot/`:
+
+- `wwwroot/css/design-system.css` — the design system as **design tokens** (CSS custom properties): colour,
+  spacing, type, radius, elevation, plus **status/priority tokens mapped to the FSD enums**. Component
+  classes only. Re-skinning changes tokens here, not screens.
+- `wwwroot/js/api.js` — a thin client with **one method per 2.D endpoint** (FSD §6), generated FROM the
+  contract; resolves the DTO or rejects with the one `{ status, error, code }` shape. jQuery `$.ajax`.
+- `wwwroot/js/app.js` — a hash-router rendering **Vehicles → Vehicle detail (info + odometer + work orders)
+  → New work order → Work order detail (costs + status actions + add parts)**. Client validation **mirrors
+  the FSD §5 rules** (dates, state machine, stock); the server stays authoritative.
+- `wwwroot/index.html` — the app shell; shows the live `buildStage` from `/api/meta`.
+- Wire `app.UseDefaultFiles(); app.UseStaticFiles();` into `Program.cs` (before the endpoints) and set
+  `/api/meta` `BuildStage` to `"2.E — UI"`.
+
+**Verify visually (the 2.E technique):** don't trust "it rendered". For each screen, run the **screenshot
+loop** — Claude captures the running page with the pre-installed Playwright, opens the PNG, critiques it
+against the design tokens (alignment, spacing, overflow, off-brand), fixes, and re-screenshots until it
+matches. Do the awkward **states** too: empty list, the 404/409/validation error, a narrow width, a long value.
+
+**Definition of done (2.E):** `dotnet run` serves the UI at `/`; the list/detail/create/status/parts flows
+work against the real API; a rule violation shows the friendly message from the one error shape; branding
+comes only from the tokens; every screen (and its states) was screenshot-checked against the design.
+
+### 2.F Consistency instruments (Module 2.F — constrain generation up front)
+
+Turn the standards into instruments the whole team inherits, so generated code is consistent **before**
+review, not after. Nothing new in the domain — this layer is CLAUDE.md + `.claude/` + `docs/`. Build:
+
+- **Grow the standards** — the root [`CLAUDE.md`](../CLAUDE.md) holds the tight, always-on rules (naming,
+  layering, one error shape, logging, DTOs/enums, UI tokens) and points to [`docs/standards.md`](../docs/standards.md)
+  for the detail: **approved patterns AND named anti-patterns**, per rule. Keep `CLAUDE.md` short.
+- **Skill `new-endpoint`** — [`../.claude/skills/new-endpoint/SKILL.md`](../.claude/skills/new-endpoint/SKILL.md):
+  the approved way to add a **domain** endpoint — DTO (record) + mapper → service rule citing `// FSD §5.x`
+  → thin `*Endpoints.cs` mapping → validation → a `FleetLink.Tests` test. Mirrors the 2.D pattern so every
+  endpoint is identical. (`add-slice` stays for non-domain probe slices.)
+- **Command `/standards-check`** — [`../.claude/commands/standards-check.md`](../.claude/commands/standards-check.md):
+  reviews a diff (`git diff`, `--staged`, `main...HEAD`, or a path) against the standards and reports
+  drift by severity. Read-only.
+- **Hook (deterministic guardrail)** — [`../.claude/settings.json`](../.claude/settings.json) registers a
+  `PreToolUse` hook on `Edit|Write|MultiEdit` running [`../.claude/hooks/guard.mjs`](../.claude/hooks/guard.mjs),
+  which **blocks** a write containing a secret or connection string before it lands (the CLAUDE.md sandbox
+  rule, made deterministic). Node, so it runs on Windows/macOS/Linux alike.
+- **Subagent `standards-reviewer`** — [`../.claude/agents/standards-reviewer.md`](../.claude/agents/standards-reviewer.md):
+  a read-only reviewer for whole-layer / whole-branch audits, runnable in parallel.
+- **Record the stage** — set `/api/meta` `BuildStage` to `"2.F — Consistency"` (and `Version` `0.6.0`).
+
+**Definition of done (2.F):** `dotnet run` and `dotnet test` still green with the new `BuildStage`;
+`CLAUDE.md` is tight and links to `docs/standards.md`; the four instruments exist under `.claude/`; the
+guardrail hook **blocks** a test secret and **allows** clean code (`echo '{"tool_input":{"content":"..."}}'
+| node .claude/hooks/guard.mjs`); `/standards-check` runs; the `new-endpoint` skill is discoverable. Both
+tracks carry the same instruments.
+
 ## 3. Build order (follow the labs, not this list, day to day)
 
-0. **2.B** brownfield `/version` + scaffold empty layer folders + `/api/meta` slice → frame runs, no domain.
+0. **2.B** confirm a spec-to-build plan + scaffold empty layer folders + `/api/meta` slice + `add-slice` skill → frame runs, no domain.
 1. **2.C** Models + `FleetStore` + `SeedData` + read endpoints → app lists real seed data.
 2. **2.D** DTOs → services with rules → write endpoints → validation → tests green.
 3. **2.E** UI against the API contract (separate front-end; see the JavaScript track or a Razor/Blazor
@@ -134,3 +243,25 @@ Structured logging, a global exception handler mapping to the problem shape, and
 - New endpoints return exactly the FSD status codes.
 - Every business rule touched has a passing test.
 - The diff was reviewed by a human before commit; the commit message says what changed and why.
+
+
+## 2.G / 2.H — Day 7: hand-off endpoint, debugging & RCA (for Claude Code)
+
+Build on the Day-6 toolkit. Files to create/change on `day-7/<you>` (.NET track):
+
+**2.G — the BA→dev hand-off read endpoint** (use the `new-endpoint` skill so it matches the API):
+- `Dtos/ResponseDtos.cs` — add `WorkOrderPartLineDto(Guid PartId, string PartNumber, string Name, int Quantity, decimal UnitCost, decimal LineCost)`.
+- `Dtos/Mappers.cs` — add `ToLineDto(this WorkOrderPart wp, Part part)` (LineCost derived).
+- `Services/IWorkOrderService.cs` + `Services/WorkOrderService.cs` — add `ListWorkOrderParts(Guid workOrderId)` (404 if unknown).
+- `Endpoints/WorkOrderEndpoints.cs` — add `GET /api/work-orders/{id:guid}/parts`.
+- `FleetLink.Tests/WorkOrderPartsAndGuardTests.cs` — the 200 (derived LineCost) and the 404.
+
+**2.H — the fix + authoritative guardrail** (FSD rule 8):
+- `Common/Errors.cs` — add `InvalidQuantity()` → 400 `invalid_quantity`.
+- `Services/WorkOrderService.cs` — in `AddParts`, reject `Quantity < 1` BEFORE mutating anything (the service never trusts the edge validator).
+- `Validation/RequestValidators.cs` — keep the boundary `Quantity >= 1` (mirrors the service).
+- `FleetLink.Tests/WorkOrderPartsAndGuardTests.cs` — `[Theory]` quantity 0 / -3 → `invalid_quantity`, stock unchanged.
+- `../labs/day-7/` — `incident-sample.log` (RCA material) and `symptom.md`.
+
+**Record the stage:** `Services/MetaService.cs` → Version `0.7.0`, BuildStage `2.H — Debugging & RCA`.
+Definition of done: `dotnet test` green; new endpoint returns the FSD status codes; the regression was red before the fix.

@@ -1,20 +1,26 @@
-# Day 2 Lab — Module 2.B: Claude Code Foundations (New & Existing)
+# Day 2 Lab — Module 2.B: Spec-Driven Development
 
-**Time:** ~100 minutes hands-on · **Branch:** `day-2/<you>` (from your Day-1 branch) · **Track:** stay in the one you picked — `dotnet/` **or** `javascript/`
+**Time:** ~120 minutes hands-on · **Branch:** `day-2/<you>` (from `upstream/main`, the shared ideal reference) · **Track:** stay in the one you picked — `dotnet/` **or** `javascript/`
 
-**What you leave with:** Claude Code installed, signed in and driven end to end; a **brownfield** change made on your own Day-1 skeleton in its existing style; a **greenfield** scaffold of FleetLink's layered structure with a sharper `CLAUDE.md`; and one thin, non-domain **`GET /api/meta`** slice that proves the frame runs — all reviewed, committed and pushed.
+**What you leave with:** a **build plan** for FleetLink that you derived from the FSD and confirmed yourself; the running project **scaffolded** — a layered structure and a sharper `CLAUDE.md` — with one thin, non-domain **`GET /api/meta`** slice that proves the frame runs; and your first **Claude Code skill** (`add-slice`) that captures the slice pattern so the team stays consistent — everything traceable to the spec, all reviewed, committed and pushed.
 
-> Today is a **tool** day, in two halves. **Part A** onboards Claude Code onto an existing codebase — your Day-1 skeleton — the way you would onto a legacy app on a real account. **Part B** scaffolds the next layer of the running project from nothing. You do **not** build FleetLink's entities, seed data or business rules today — those are designed deliberately in **2.C tomorrow**. Hold that line.
+> Today is not "how to drive Claude Code" — you did that in Level 1. Today is the **method** you wrap around the tool to build a whole system: **spec-driven development.** Three parts. **Part A** turns the FSD into a build plan you confirm. **Part B** executes the plan's first step — scaffold the frame and prove one slice. **Part C** captures the slice procedure as a reusable **skill**. Everything traces back to the spec. You do **not** build FleetLink's entities or business rules today — those are designed deliberately from the same spec in **2.C tomorrow**.
 
 ---
 
 ## 0. Setup — branch, launch, prove sign-in (15 min)
 
-1. **Continue from yesterday.** Branch today's work from your Day-1 branch, so the project stays cumulative:
+1. **Start from the shared ideal reference — not your own Day-1 branch.** Every day begins from the same
+   correct baseline on `upstream/main` (the facilitator's ideal build so far), so a missed step never
+   cascades. Fetch it and branch today's work from it:
    ```bash
-   git checkout day-1/<your-name>
-   git checkout -b day-2/<your-name>
+   git fetch upstream
+   git checkout -b day-2/<your-name> upstream/main
    ```
+   *(On a fresh machine? Clone your fork first: `git clone https://github.com/<your-name>/fleet-link-claude-level-2.git fleetlink && cd fleetlink && git remote add upstream https://github.com/rutwikshete-novelvista/fleet-link-claude-level-2.git`)*
+
+   > You're starting from the **ideal completion of Day 1**, whatever happened in your own Day-1 session.
+   > Take a moment to look at the baseline you're building on — then add today's layer on top.
 2. **Confirm Claude Code is installed** (it is pre-installed on your VM). If you are setting it up on a real machine later, see [Windows install](#appendix--windows-install--login-hand-out).
    ```bash
    claude --version
@@ -32,45 +38,41 @@
 
 ---
 
-## Part A — Brownfield: onboard onto your Day-1 skeleton (35 min)
+## Part A — Plan from the FSD (35 min)
 
-Your skeleton is small, but it is a **real existing codebase** — you treat it exactly the way you would treat a legacy app you have just been handed. The rule of the half: **understand before you touch.**
+The work comes from the **spec**, not from ad-hoc prompts. So before any code, you turn the FSD into a **build plan** — the vertical slices to build, in order, with the human checkpoints — and you confirm it against the spec. **Plan first; the plan is the deliverable.**
 
-### A1. Map the skeleton (10 min)
-
-**Prompt to start from:**
-> "Do not change anything yet. Read my track's skeleton (`dotnet/` **or** `javascript/`, whichever I use) and explain it to me: the entry point, how the health endpoint is wired from request to response, how the app is configured, and how I run and test it. List the files involved."
-
-**Do:** read its explanation against the actual files. Where is it exactly right? Did it add anything that isn't there? This is the same *catch-the-hallucination* habit from Day 1 — it does not go away just because the tool got more capable.
-
-**Deliverable:** create `day2/00-skeleton-map.md` — in your own words, how the health endpoint flows end to end and where you would add a new endpoint.
-
-**Checkpoint A1 — commit.**
-
-### A2. Make one small, safe, conventional change (20 min)
-
-You will add **one** tiny endpoint that mirrors the existing health pattern **exactly** — a `GET /version` (or `/health/version`) that returns the app name and a version string. It touches no business data. The point is to prove you can change this codebase safely and in its own style.
+### A1. Understand the spec (10 min)
 
 **Prompt to start from:**
-> "Following the **existing pattern** used by the health endpoint — same file layout, same naming, same style — add a `GET /version` endpoint that returns `{ "app": "FleetLink", "version": "0.2.0" }`. Do not introduce new libraries, new folders, or a new way of doing things. Show me the diff before applying it, and tell me how to run and verify it."
+> "Read `docs/FSD-FleetLink.md`. In plain language, summarise what FleetLink is, who uses it, and the parts of the spec that will be hardest to build correctly. Do **not** write code or a plan yet — just show me you understand the spec, and ask me anything it leaves ambiguous."
+
+**Do:** read its summary against the FSD. Where is it exactly right? Where did it add something the spec never says (an entity, a field, a rule)? Note one such "helpful hallucination" — catching it is the skill, and it's the same one you used on the entity list yesterday.
+
+**Checkpoint A1 — commit** (an empty commit is fine; the real artifact comes next).
+
+### A2. Turn the spec into a build plan, then confirm it (25 min)
+
+**Prompt to start from:**
+> "From `docs/FSD-FleetLink.md` and `docs/build-sequence.md`, draft a **build plan** for FleetLink as an ordered list of **vertical slices** — from the non-domain frame slices, through the read endpoints, to the write endpoints with business rules. For each slice give: what it builds, which FSD section/rule it satisfies, and the **human checkpoint** before it. Note which module (2.B–2.I) each slice belongs to. This is a **draft for me to confirm** — do not write any code."
 
 **Do:**
-- **Read the diff before you accept it.** Does it match the existing style? Does it add anything you didn't ask for? Reject or refine anything you don't understand — you own every line.
-- Run your track and confirm **both** endpoints respond and health is still green:
-  - **.NET:** `cd dotnet && dotnet run --project src/FleetLink.Api` → open `/health` and `/version`
-  - **JavaScript:** `cd javascript && npm start` → open `/health` and `/version`; then `npm test` still green.
+- **Confirm the plan against the spec.** Does it cover the FSD's endpoints (§6) and rules (§5)? Is the order database-first, matching yesterday's decision? Did it invent a slice the spec never asked for? Reorder, cut, add until you'd put your name on it.
+- Compare it to [`docs/build-sequence.md`](../docs/build-sequence.md) — they should broadly agree, which is a good sign the method isn't arbitrary.
 
-**Acceptance:** `/version` returns the JSON above; `/health` is unchanged and still green; the change is small and matches the existing style.
+**Deliverable:** save your confirmed plan as **`day2/plan.md`** — in your own words, the slices in order with checkpoints, and a one-line note on anything you cut because the spec didn't ask for it.
 
-**Checkpoint A2 — commit:** `git commit -am "Day 2 (2.B): brownfield — add /version following the health pattern"`
+**Acceptance:** `day2/plan.md` exists, is yours (not raw Claude output), the order is database-first, and every slice traces to the FSD.
 
-> **What you just practised:** map → understand → one small safe change → verify. That is the brownfield loop you will run on real legacy code on Monday.
+**Checkpoint A2 — commit:** `git commit -am "Day 2 (2.B): confirmed spec-to-build plan (day2/plan.md)"`
+
+> **What you just practised:** read the spec → draft a plan → confirm it against the spec. That's the plan-first workflow you'll run at the start of every build from here on.
 
 ---
 
-## Part B — Greenfield: scaffold the next layer (40 min)
+## Part B — Execute step one: scaffold + prove a slice (40 min)
 
-Now switch hats — from *guest in existing code* to *author of new structure*. You scaffold the frame the coming days fill, lock the conventions, and prove the frame with one thin slice. **Structure and standards first; then one slice.**
+Now execute the **first step of the plan you just confirmed**: stand up the frame the later slices fill, lock the conventions, and prove the frame with one thin slice. **Structure and standards first; then one slice — the smallest thing that runs end to end.**
 
 ### B1. Scaffold the layered structure (10 min)
 
@@ -105,30 +107,79 @@ One thin, **non-domain** vertical slice through the layers you just scaffolded �
   - **.NET:** `dotnet run --project src/FleetLink.Api` → open `http://localhost:5080/api/meta`
   - **JavaScript:** `npm start` → open `http://localhost:5080/api/meta`; `npm test` still green.
 
-**Acceptance:** `/api/meta` returns the JSON above through a service layer; `/health` and `/version` still work; no FleetLink entity exists yet.
+**Acceptance:** `/api/meta` returns the JSON above through a service layer; `/health` still works; no FleetLink entity exists yet.
 
 **Checkpoint B3 — commit:** `git commit -am "Day 2 (2.B): greenfield — /api/meta slice through route→service"`
+
+---
+
+## Part C — Capture the pattern as a skill (20 min)
+
+You just built the `/api/meta` slice by hand. Now capture that *procedure* as a **Claude Code skill** so
+anyone on the team can add a consistent slice on demand — the same way, every time — instead of
+re-describing the convention. A skill is a small `SKILL.md` under `.claude/skills/`; because it lives in
+the repo, **every teammate's Claude Code picks it up.** That is the whole point: consistency by
+construction.
+
+> This is a **first taste** of skills. Module **2.F** takes it much further — multiple skills, slash
+> commands, hooks and subagents that *enforce* your standards. Today you make one simple skill and feel
+> why it matters.
+
+### C1. Create the skill (10 min)
+
+**Prompt to start from:**
+> "Create a Claude Code project skill at `.claude/skills/add-slice/SKILL.md` that captures the pattern we
+> just used for `/api/meta`: given a route path, a slice name and a fixed non-domain response, it adds a
+> new slice through the layers (a service holding no business logic, and a thin route/endpoint that calls
+> it), detects my track (`dotnet`/`javascript`), follows both `CLAUDE.md` files and the `/api/meta`
+> reference, and **stops at the diff for review**. It must refuse to build FSD entities or business rules
+> (those are 2.C/2.D). Show me the diff."
+
+**Do:** read the generated `SKILL.md`. Is the `description` clear about *when* to use it? Does it list the
+guardrails (non-domain only, nothing invented, stop for review)? Tighten it in your own words — you own
+it. Then commit.
+
+**Checkpoint C1 — commit:** `git commit -am "Day 2 (2.B): add-slice skill — capture the slice pattern"`
+
+### C2. Use your skill (10 min)
+
+Restart Claude Code (so it picks up the new skill) and invoke it to add one more tiny non-domain slice —
+proving the skill produces the *same layered shape* you built by hand.
+
+**Prompt to start from:**
+> "Use the add-slice skill to add `GET /api/status` returning `{ "status": "up", "track": "<mine>" }`
+> through a service. Show me the diff and how to run it — don't commit."
+
+**Do:** confirm the diff matches the `/api/meta` shape (service + thin route/endpoint, no logic in the
+route). Run it, hit `/api/status`, then review and commit. That is the payoff: one instruction, a
+consistent slice — and everyone on the team gets the same result.
+
+**Acceptance:** `.claude/skills/add-slice/SKILL.md` exists; invoking it produced a `/api/status` slice in
+the same layered shape; still no domain entities or rules.
+
+**Checkpoint C2 — commit:** `git commit -am "Day 2 (2.B): use add-slice skill to add /api/status"`
 
 ---
 
 ## Done when…
 
 - [ ] Claude Code launched from the repo root and sign-in confirmed.
-- [ ] `day2/00-skeleton-map.md` exists and is **yours** (not raw Claude output).
-- [ ] Brownfield: `/version` added in the existing style; `/health` still green.
-- [ ] Greenfield: layer folders scaffolded (folders only), `CLAUDE.md` sharpened, `/api/meta` slice runs.
+- [ ] `day2/plan.md` exists, is **yours** (not raw Claude output), and every slice traces to the FSD.
+- [ ] Scaffold: layer folders (folders only), `CLAUDE.md` sharpened, `/api/meta` slice runs and `/health` still green.
+- [ ] Skill: `.claude/skills/add-slice/SKILL.md` exists and you used it to add a second slice (`/api/status`).
 - [ ] **No** FleetLink entities, seed data or business rules were built (that's 2.C).
 - [ ] You reviewed **every** diff before committing; commits say *what changed and why*.
 - [ ] Your `day-2/<you>` branch is pushed.
 
-**Push and (optionally) open a PR** so a facilitator can review your scaffold:
+**Push to your fork and (optionally) open a PR** — from your fork's branch against the shared repo's
+`main` — so a facilitator can review your scaffold:
 ```bash
-git push -u origin day-2/<your-name>
+git push -u origin day-2/<your-name>      # origin = your fork
 ```
 
 ## Tomorrow (Day 3 · Module 2.C)
 
-You branch `day-3/<you>` from today's work and design FleetLink's **data model** — entities, relationships and constraints — deliberately, **database-first**, straight from the FSD. Today's scaffold is exactly the frame that domain code slots into.
+You branch `day-3/<you>` from `upstream/main` — which by then holds today's **ideal** scaffold — and design FleetLink's **data model** — entities, relationships and constraints — deliberately, **database-first**, straight from the FSD. The scaffold is exactly the frame that domain code slots into, and you start Day 3 from the ideal version of it, not your own.
 
 ---
 

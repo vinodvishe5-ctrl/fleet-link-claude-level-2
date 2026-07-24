@@ -30,18 +30,64 @@ git branch -M main
 git push -u origin main
 ```
 
-## 3. (Optional) protect main
+## 3. Access model — trainees **fork** (no collaborators needed)
 
-In GitHub → Settings → Branches, add a rule so trainees cannot push to `main` directly — they work on
-`day-N/<name>` branches and open PRs, exactly as in [`BRANCHING.md`](BRANCHING.md).
+Trainees do **not** get write access to this repo, and you do **not** add 30 collaborators. Each trainee
+**forks** it to their own account and pushes to their fork; they open pull requests back to this repo for
+review. This is why a trainee pushing straight to this repo gets `403 Permission denied` — that is
+expected, and the fork flow is the fix. See [`BRANCHING.md`](BRANCHING.md).
+
+Keep this repo public (so everyone can fork/clone) and, optionally, protect `main` in
+GitHub → Settings → Branches so nobody force-pushes the seed.
 
 ## 4. Share with trainees
 
-Send them the repo URL and this one line:
+Send them the repo URL and these lines:
 
-> Clone it, then follow `labs/day-1-architecture.md`.
+> 1. Click **Fork** on this repo (creates `github.com/<you>/fleet-link-claude-level-2`).
+> 2. Clone **your fork** into a folder named `fleetlink`, then add this repo as `upstream`:
+> ```bash
+> git clone https://github.com/<you>/fleet-link-claude-level-2.git fleetlink
+> cd fleetlink
+> git remote add upstream https://github.com/rutwikshete-novelvista/fleet-link-claude-level-2.git
+> ```
+> 3. Follow `labs/day-1-architecture.md`. **Each day, start fresh from the shared ideal reference:**
+> `git fetch upstream && git checkout -b day-N/<you> upstream/main`. Push your day's branch to **your fork**
+> (`origin`) and open PRs against this repo for review.
 
-That's it — the seed on `main` is everything they need to start Day 1.
+That's it — the seed on `main` is everything they need to start Day 1, and they push to their own fork.
+
+**Trainees re-baseline every day — they do NOT carry their own work forward.** `main` always holds the
+ideal build so far; everyone branches the new day off `upstream/main`. That way a missed step never
+cascades into the next day. The mechanism and the daily routine are in [`BRANCHING.md`](BRANCHING.md).
+
+## 4b. Reference branches & advancing `main` (the bit that makes re-baseline work)
+
+Each day's **ideal, completed** build is staged on a `solution/day-N` branch (Novel Vista supplies these
+— e.g. `solution/day-2` = the ideal Module-2.B scaffold). **At the end of day N**, after the class has
+done that day, promote it so the next morning everyone starts from the ideal:
+
+```bash
+git fetch origin
+git checkout main
+git merge --ff-only origin/solution/day-2      # the day you just finished
+git push origin main
+```
+
+Do **not** promote a day's solution *before* the class runs that day, or they'll pull `main` and find the
+work already done. Keep `main` = "the ideal starting point for the day we are about to run."
+
+## 5. Your own pushes as facilitator
+
+You push the seed and reference branches to this repo directly, so authenticate as the account that
+**owns** it (or has write on it). If a push is denied for the wrong account (e.g. a cached identity),
+clear the cached credential and re-authenticate as the owner, or use a fine-grained Personal Access
+Token (scope: this repo, Contents = Read/Write) as the password at the HTTPS prompt:
+
+```
+Windows: Control Panel → Credential Manager → Windows Credentials → remove "git:https://github.com", push again, sign in as owner
+Mac:     printf "protocol=https\nhost=github.com\n\n" | git credential-osxkeychain erase
+```
 
 ---
 
